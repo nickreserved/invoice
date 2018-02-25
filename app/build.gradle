@@ -2,13 +2,13 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 23
-    buildToolsVersion '23.0.2'
+    buildToolsVersion '24.0.2'
     defaultConfig {
         applicationId 'chameleon.army.Invoice'
         minSdkVersion 14
         targetSdkVersion 23
         signingConfig signingConfigs.config
-        versionCode 2
+        versionCode 3
     }
     buildTypes {
         release {

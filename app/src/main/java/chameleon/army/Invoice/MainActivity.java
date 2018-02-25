@@ -47,7 +47,7 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
 
 		setSpinner(R.id.spFPA, R.array.FPA, pref.getInt(FPA, 24));
 		setSpinner(R.id.spFE, R.array.FE, pref.getInt(FE, 4));
-		setSpinner(R.id.spHolds, holdList, pref.getInt(HOLDS, 40960) / 10000.0);	// 4.0960
+		setSpinner(R.id.spHolds, holdList, pref.getInt(HOLDS, 409600) / 100000.0);	// 4.09600
 		((ArrayAdapter) ((Spinner) findViewById(R.id.spHolds)).getAdapter()).add(getString(R.string.hldOther));
 
 		Spinner spinner = (Spinner) findViewById(R.id.spContractorType);
@@ -245,7 +245,7 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
 		edit.putBoolean(CONSTRUCTION, ((CheckBox) findViewById(R.id.cbConstruction)).isChecked());
 		edit.putInt(FPA, Integer.parseInt(((Spinner) findViewById(R.id.spFPA)).getSelectedItem().toString()));
 		edit.putInt(FE, Integer.parseInt(((Spinner) findViewById(R.id.spFE)).getSelectedItem().toString()));
-		edit.putInt(HOLDS, (int) (10000 * Double.parseDouble(((Spinner) findViewById(R.id.spHolds)).getSelectedItem().toString())));
+		edit.putInt(HOLDS, (int) (100000 * Double.parseDouble(((Spinner) findViewById(R.id.spHolds)).getSelectedItem().toString())));
 		String s = ((EditText) findViewById(R.id.txtAmount)).getText().toString();
 		edit.putFloat(AMOUNT, s.isEmpty() ? 0 : Float.parseFloat(s));
 		edit.apply();
@@ -254,7 +254,7 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
 
 	private Hold getHold(double val) {
 		for (Hold item : holdList)
-			if (Math.abs(item.total() - val) < 1e-8) return item;
+			if (Math.abs(item.total() - val) < 1e-9) return item;
 		return null;
 	}
 
@@ -318,7 +318,7 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
                 else {
                     hold = getHold(holdsPercent = self /* Ιδιοι πόροι */ ? 0.14096 : 0.04096);
                     if (calculateNet(contractor, amountType, amount, fpaPercent, holdsPercent, fePercent) > 2500)
-                        hold = getHold(holdsPercent = self /* Ιδιοι πόροι */ ? 0.141996 : 0.041996);
+                        hold = getHold(holdsPercent = self /* Ιδιοι πόροι */ ? 0.1415816 : 0.0415816);
                 }
                 // Μεταγενέστερος έλεγχος: if (net <= 150) fePercent = 0;
                 if (calculateNet(contractor, amountType, amount, fpaPercent, holdsPercent, 0) <= 150) fePercent = 0;
@@ -343,7 +343,7 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
 			fe = Math.round(fe * fePercent * 100.0) / 100.0;
 			double final2 = final1 - fe;//Math.round((final1 - fe) * 100.0) / 100.0;	// fix truncation errors
 			// Εξαγωγή αποτελεσμάτων
-			DecimalFormat df = new DecimalFormat("0.####%");	// ποσοστά
+			DecimalFormat df = new DecimalFormat("0.#####%");	// ποσοστά
 			DecimalFormat df2 = new DecimalFormat("0.00¤");	// νομισματικά
 			String txt = String.format(getString(R.string.resNet), df2.format(amount));
 			String txtHolds = String.format(getString(R.string.resHolds), df.format(holdsPercent), df2.format(holds));
@@ -364,7 +364,7 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
             else if (amount > 15000 || construction && auto) txt += getString(R.string.reqCompetitionInformal) + "\n";
 			if (auto && construction && invoiceType == 1 /* Παροχή υπηρεσιών */)
 				txt += String.format(getString(R.string.reqConstructionContractor) + "\n",
-						df2.format(amount * 0.01), df2.format(amount * 0.002), df2.format(amount * 0.005), df2.format(amount * 0.006));
+						df2.format(amount * 0.01), df2.format(amount * 0.005));
 			if (txt.equals("")) txt = getString(R.string.reqEmpty) + "\n";
 			((TextView) findViewById(R.id.tvRequirements)).setText(txt.substring(0, txt.length() - 1));	// remove last newline
 			// Ανάλυση κρατήσεων
@@ -386,16 +386,16 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
 		}
 	}
 
-	//                             ΜΤΣ,   Χαρτόσημο, ΟΓΑ,    ΕΑΑΔΗΣΥ, ΒΑΜ, ΕΚΟΕΜΣ, ΓΓΚΠ
+	//                             ΜΤΣ,    Χαρτόσημο, ΟΓΑ,       ΕΑΑΔΗΣΥ, ΒΑΜ, ΕΚΟΕΜΣ
 	final private Hold[] holdList = {
-			new Hold(new double[] {0.04,    0.0008,  0.00016}),									// 4.096
-			new Hold(new double[] {0.04,    0.00083, 0.000166, 0.001}),							// 4.1996
-			new Hold(new double[] {0.03904, 0.0008,  0.00016}),									// 4
-			new Hold(new double[] {0.04,    0.00085, 0.00017,  0.001, 0,    0,    0.001}),		// 4.302
-			new Hold(new double[] {0,       0,       0,        0,     0.02, 0.08}),				// 10
-			new Hold(new double[] {0.03904, 0.0008,  0.00016,  0,     0.02, 0.08}),				// 14
-			new Hold(new double[] {0.04,    0.0008,  0.00016,  0,     0.02, 0.08}),				// 14.096
-			new Hold(new double[] {0.04,    0.00083, 0.000166, 0.001, 0.02, 0.08}),				// 14.1996
+			new Hold(new double[] {0.04,    0.0008,   0.00016}),						// 4.096
+			new Hold(new double[] {0.04,    0.000818, 0.0001636, 0.0006}),				// 4.15816
+			new Hold(new double[] {0.03904, 0.0008,   0.00016}),						// 4
+			new Hold(new double[] {0,       0.000018, 0.0000036, 0.0006}),				// 0.06216
+			new Hold(new double[] {0,       0,        0,         0,      0.02, 0.08}),	// 10
+			new Hold(new double[] {0.03904, 0.0008,   0.00016,   0,      0.02, 0.08}),	// 14
+			new Hold(new double[] {0.04,    0.0008,   0.00016,   0,      0.02, 0.08}),	// 14.096
+			new Hold(new double[] {0.04,    0.000818, 0.0001636, 0.0006, 0.02, 0.08}),	// 14.15816
 	};
 
 	private class Hold {
