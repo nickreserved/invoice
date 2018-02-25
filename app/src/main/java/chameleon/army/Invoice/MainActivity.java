@@ -3,9 +3,9 @@ package chameleon.army.Invoice;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.content.Intent;
-import android.net.Uri;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
@@ -28,17 +28,30 @@ import java.util.Collections;
 import java.util.Comparator;
 
 public class MainActivity extends Activity implements AdapterView.OnItemSelectedListener {
-    @Override
+    static private final String CONTRACTOR = "Προμηθευτής";
+	static private final String FPA = "ΦΠΑ";
+	static private final String FE = "ΦΕ";
+	static private final String HOLDS = "Κρατήσεις";
+	static private final String INVOICE_TYPE = "ΤύποςΤιμολογίου";
+	static private final String AMOUNT_TYPE = "ΤύποςΠοσού";
+	static private final String AMOUNT = "Ποσό";
+	static private final String AUTOMATIC = "Αυτόματο";
+	static private final String SELF_PAYED = "Αυτοχρηματοδοτούμενο";
+	static private final String CONSTRUCTION = "Εγκαταστάσεις";
+
+	@Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+		SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 
-		setSpinner(R.id.spFPA, R.array.FPA);
-		setSpinner(R.id.spFE, R.array.FE);
-		setSpinner(R.id.spHolds, holdList);
+		setSpinner(R.id.spFPA, R.array.FPA, pref.getInt(FPA, 24));
+		setSpinner(R.id.spFE, R.array.FE, pref.getInt(FE, 4));
+		setSpinner(R.id.spHolds, holdList, pref.getInt(HOLDS, 40960) / 10000.0);	// 4.0960
 		((ArrayAdapter) ((Spinner) findViewById(R.id.spHolds)).getAdapter()).add(getString(R.string.hldOther));
 
-		((Spinner) findViewById(R.id.spContractorType)).setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+		Spinner spinner = (Spinner) findViewById(R.id.spContractorType);
+		spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(final AdapterView<?> parentView, View selectedItemView, int position, long id) {
 				TextView tv = (TextView) findViewById(R.id.tvContractorInfo);
@@ -55,13 +68,21 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
 			}
 			@Override public void onNothingSelected(AdapterView<?> parentView) {}
 		});
+		// load spinner value for contractor
+		int a = pref.getInt(CONTRACTOR, 0);
+		if (a < 0 || a >= spinner.getCount()) a = 0;
+		spinner.setSelection(a);
 
-        AdapterView.OnItemSelectedListener swListener = new AdapterView.OnItemSelectedListener() {
+		AdapterView.OnItemSelectedListener swListener = new AdapterView.OnItemSelectedListener() {
             @Override public void onItemSelected(final AdapterView<?> parentView, View selectedItemView, int position, long id) { calculation(); }
             @Override public void onNothingSelected(AdapterView<?> parentView) {}
         };
-        ((Spinner) findViewById(R.id.spAmountType)).setOnItemSelectedListener(swListener);
-        ((Spinner) findViewById(R.id.spInvoiceType)).setOnItemSelectedListener(swListener);
+		spinner = (Spinner) findViewById(R.id.spAmountType);
+        spinner.setOnItemSelectedListener(swListener);
+		spinner.setSelection(pref.getInt(AMOUNT_TYPE, 0));
+		spinner = (Spinner) findViewById(R.id.spInvoiceType);
+		spinner.setOnItemSelectedListener(swListener);
+		spinner.setSelection(pref.getInt(INVOICE_TYPE, 0));
 
         EditText editText = (EditText) findViewById(R.id.txtAmount);
 		editText.addTextChangedListener(new TextWatcher() {
@@ -69,8 +90,11 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
             @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
             @Override public void onTextChanged(CharSequence s, int start, int before, int count) {}
         });
+		float b = pref.getFloat(AMOUNT, 0);
+		if (b > 0) editText.setText(Float.toString(b).replaceAll("\\.0$", ""));  // Αφαιρεί το αντιαισθητικό ".0" από το "123.0"
 
-        ((Switch) findViewById(R.id.swAuto)).setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+		CompoundButton checkBox = (CompoundButton) findViewById(R.id.swAuto);
+		checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
@@ -85,26 +109,34 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
                 calculation();
             }
         });
+		checkBox.setChecked(pref.getBoolean(AUTOMATIC, true));
 
         CompoundButton.OnCheckedChangeListener cbListener = new CompoundButton.OnCheckedChangeListener() {
             @Override public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) { calculation(); }
         };
-        ((CheckBox) findViewById(R.id.cbSelf)).setOnCheckedChangeListener(cbListener);
-        ((CheckBox) findViewById(R.id.cbConstruction)).setOnCheckedChangeListener(cbListener);
-    }
+        checkBox = (CompoundButton) findViewById(R.id.cbSelf);
+		checkBox.setOnCheckedChangeListener(cbListener);
+		checkBox.setChecked(pref.getBoolean(SELF_PAYED, false));
+		checkBox = (CompoundButton) findViewById(R.id.cbConstruction);
+        checkBox.setOnCheckedChangeListener(cbListener);
+		checkBox.setChecked(pref.getBoolean(CONSTRUCTION, false));
+	}
 
 	// Κοινός κώδικας που σετάρει το spinner του ΦΠΑ και ΦΕ
-	void setSpinner(int resSpinner, int resArray) {
-		setSpinner(resSpinner, getResources().getStringArray(resArray));
+	private void setSpinner(int resSpinner, int resArray, double value) {
+		setSpinner(resSpinner, getResources().getStringArray(resArray), value);
 	}
 	// Κοινός κώδικας που σετάρει το spinner του ΦΠΑ, κρατήσεων και ΦΕ
-	<T> void setSpinner(int resSpinner, T[] array) {
+	private <T> void setSpinner(int resSpinner, T[] array, double value) {
 		Spinner spinner = (Spinner) findViewById(resSpinner);
 		ArrayAdapter<T> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item,
 				new ArrayList<>(Arrays.asList(array)));
 		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		spinner.setAdapter(adapter);
 		spinner.setOnItemSelectedListener(this);
+		// set value
+		setSpinnerValue(spinner, value);
+		if (resSpinner == R.id.spFE) setFEInfo(spinner);
 	}
 
     @Override
@@ -119,13 +151,8 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
 		if (id == R.id.action_about) {
 			new AlertDialog.Builder(this)
 					.setTitle(R.string.about)
-					.setMessage(String.format(getString(R.string.aboutInfo), BuildConfig.VERSION_NAME))
-					.setPositiveButton(R.string.OK, null)
-					.setNeutralButton(R.string.web, new DialogInterface.OnClickListener() {
-						@Override public void onClick(DialogInterface dialog, int which) {
-							startActivity(new Intent(Intent.ACTION_VIEW,Uri.parse("http://sourceforge.net/projects/ha-invoice/files/latest/download")));
-						}
-					})
+					.setMessage(String.format(getString(R.string.aboutInfo), BuildConfig.VERSION_CODE))
+					.setNeutralButton(android.R.string.ok, null)
 					.setCancelable(true)
 					.create().show();
             return true;
@@ -141,36 +168,36 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
 			txtNum.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
 			txtNum.setHint("%");
 
-			final MainActivity ths = this;
 			new AlertDialog.Builder(this)
 					.setTitle(R.string.newValue)
 					.setView(txtNum)
-					.setPositiveButton(R.string.OK, new DialogInterface.OnClickListener() {
+					.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
 						public void onClick(DialogInterface dialog, int whichButton) {
 							try {
 								// Μετατροπή της εισόδου σε αριθμό στο [0, 80]
 								Double num = Double.valueOf(txtNum.getText().toString());
 								if (num > 80) {    // Η είσοδος δεν είναι έγκυρος αριθμός
 									parentView.setSelection(0);
-									Toast.makeText(ths, R.string.invalidValue, Toast.LENGTH_SHORT).show();
+									Toast.makeText(MainActivity.this, R.string.invalidValue, Toast.LENGTH_SHORT).show();
+									return;
 								}
 								// Αν ο αριθμός ήδη υπάρχει στη λίστα...
 								for (int z = 0; z < other; ++z)
 									if (Double.valueOf(parentView.getItemAtPosition(z).toString()).equals(num)) {
 										parentView.setSelection(z);    // ...τον επιλέγει
-										Toast.makeText(ths, R.string.existedValue, Toast.LENGTH_SHORT).show();
+										Toast.makeText(MainActivity.this, R.string.existedValue, Toast.LENGTH_SHORT).show();
 										return;
 									}
 								// ...ειδάλλως τον εισάγει
                                 @SuppressWarnings("unchecked")
 								ArrayAdapter<CharSequence> adapter = (ArrayAdapter<CharSequence>) parentView.getAdapter();
-                                adapter.insert(num.toString().replaceAll("\\.0$", ""), other);  // Αφαιρεί το αντιαισθητικό ".0" από το "23.0" και το εισάγει στη λίστα
+                                adapter.insert(num.toString().replaceAll("\\.0$", ""), other);  // Αφαιρεί το αντιαισθητικό ".0" από το "24.0" και το εισάγει στη λίστα
 								adapter.notifyDataSetChanged();
 								setFEInfo(parentView);
                             } catch (NumberFormatException e) {}
 						}
 					})
-					.setNegativeButton(R.string.Cancel, new DialogInterface.OnClickListener() {
+					.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
 						public void onClick(DialogInterface dialog, int whichButton) {
 							parentView.setSelection(0); setFEInfo(parentView);
 						}
@@ -180,7 +207,24 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
 	}
 	@Override public void onNothingSelected(AdapterView<?> parentView) {}
 
-	void setFEInfo(AdapterView s) {
+	private void setSpinnerValue(AdapterView s, double num) {
+		final int other = s.getCount() - 1;
+		try {
+			// Αν ο αριθμός ήδη υπάρχει στη λίστα...
+			for (int z = 0; z < other; ++z)
+				if (Double.valueOf(s.getItemAtPosition(z).toString()).equals(num))
+					{ s.setSelection(z); return; }    // ...τον επιλέγει
+			if (num > 80) { s.setSelection(0); return; }    // Η είσοδος δεν είναι έγκυρος αριθμός
+			// ...ειδάλλως τον εισάγει
+			@SuppressWarnings("unchecked")
+			ArrayAdapter<CharSequence> adapter = (ArrayAdapter<CharSequence>) s.getAdapter();
+			adapter.insert(Double.toString(num).replaceAll("\\.0$", ""), other);  // Αφαιρεί το αντιαισθητικό ".0" από το "24.0" και το εισάγει στη λίστα
+			adapter.notifyDataSetChanged();
+			s.setSelection(other);
+		} catch (NumberFormatException e) {}
+	}
+	
+	private void setFEInfo(AdapterView s) {
 		if (s == findViewById(R.id.spFE)) {
 			String [] ar = getResources().getStringArray(R.array.FEInfo);
 			int sel = s.getSelectedItemPosition();
@@ -190,14 +234,32 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
 		calculation();
 	}
 
-	Hold getHold(double val) {
+	@Override
+	public void onStop() {
+		SharedPreferences.Editor edit = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit();
+		edit.putInt(CONTRACTOR, ((Spinner) findViewById(R.id.spContractorType)).getSelectedItemPosition());
+		edit.putInt(AMOUNT_TYPE, ((Spinner) findViewById(R.id.spAmountType)).getSelectedItemPosition());
+		edit.putInt(INVOICE_TYPE, ((Spinner) findViewById(R.id.spInvoiceType)).getSelectedItemPosition());
+		edit.putBoolean(AUTOMATIC, ((Switch) findViewById(R.id.swAuto)).isChecked());
+		edit.putBoolean(SELF_PAYED, ((CheckBox) findViewById(R.id.cbSelf)).isChecked());
+		edit.putBoolean(CONSTRUCTION, ((CheckBox) findViewById(R.id.cbConstruction)).isChecked());
+		edit.putInt(FPA, Integer.parseInt(((Spinner) findViewById(R.id.spFPA)).getSelectedItem().toString()));
+		edit.putInt(FE, Integer.parseInt(((Spinner) findViewById(R.id.spFE)).getSelectedItem().toString()));
+		edit.putInt(HOLDS, (int) (10000 * Double.parseDouble(((Spinner) findViewById(R.id.spHolds)).getSelectedItem().toString())));
+		String s = ((EditText) findViewById(R.id.txtAmount)).getText().toString();
+		edit.putFloat(AMOUNT, s.isEmpty() ? 0 : Float.parseFloat(s));
+		edit.apply();
+		super.onStop();
+	}
+
+	private Hold getHold(double val) {
 		for (Hold item : holdList)
 			if (Math.abs(item.total() - val) < 1e-8) return item;
 		return null;
 	}
 
     // Εύρεση καθαρής αξίας
-    double calculateNet(int contractor, int amountType, double amount, double fpa, double holds, double fe) {
+    private double calculateNet(int contractor, int amountType, double amount, double fpa, double holds, double fe) {
         switch(contractor) {
             case 0:	// Ιδιώτης
                 switch(amountType) {
@@ -226,7 +288,7 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
     }
 
     // Όλο το πρόγραμμα εδώ!
-    void calculation() {
+    private void calculation() {
 		try {
 			// Λήψη όλων των απαραίτητων δεδομένων για τους υπολογισμούς
 			int contractor = ((Spinner) findViewById(R.id.spContractorType)).getSelectedItemPosition();
@@ -301,10 +363,10 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
             if (amount > 60000) txt += getString(R.string.reqCompetitionFormal) + "\n";
             else if (amount > 15000 || construction && auto) txt += getString(R.string.reqCompetitionInformal) + "\n";
 			if (auto && construction && invoiceType == 1 /* Παροχή υπηρεσιών */)
-				txt += String.format(getString(R.string.reqConstructionContractor),
+				txt += String.format(getString(R.string.reqConstructionContractor) + "\n",
 						df2.format(amount * 0.01), df2.format(amount * 0.002), df2.format(amount * 0.005), df2.format(amount * 0.006));
-			if (txt.equals("")) txt = getString(R.string.reqEmpty);
-			((TextView) findViewById(R.id.tvRequirements)).setText(txt);
+			if (txt.equals("")) txt = getString(R.string.reqEmpty) + "\n";
+			((TextView) findViewById(R.id.tvRequirements)).setText(txt.substring(0, txt.length() - 1));	// remove last newline
 			// Ανάλυση κρατήσεων
 			if (hold != null) {
 				double[] holdsAll = hold.euro(holds);
@@ -336,17 +398,17 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
 			new Hold(new double[] {0.04,    0.00083, 0.000166, 0.001, 0.02, 0.08}),				// 14.1996
 	};
 
-	public class Hold {
-		public Hold(double[] holds) { data = holds; }
-		public double total() { return sum(data); }
+	private class Hold {
+		Hold(double[] holds) { data = holds; }
+		double total() { return sum(data); }
 		@Override public String toString() { return Double.toString(Math.round(total() * 10000000.0)/ 100000.0).replaceAll("\\.0$", ""); }
-		public double[] euro(double holds) {
+		double[] euro(double holds) {
 			double euroTotal = 0, euroData[] = new double[data.length];
 			double total = total();
 			class Pair {
-				Pair(double remainder, int id) { this.remainder = remainder; this.id = id; }
+				private Pair(double remainder, int id) { this.remainder = remainder; this.id = id; }
 				double remainder;
-				int id;
+				private int id;
 			}
 			ArrayList<Pair> remainders = new ArrayList<>();
 			for (int z = 0; z < data.length; ++z) {

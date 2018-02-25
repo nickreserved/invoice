@@ -5,11 +5,10 @@ android {
     buildToolsVersion '23.0.2'
     defaultConfig {
         applicationId 'chameleon.army.Invoice'
-        minSdkVersion 17
+        minSdkVersion 14
         targetSdkVersion 23
-        versionName "2.1"
         signingConfig signingConfigs.config
-        versionCode 1
+        versionCode 2
     }
     buildTypes {
         release {

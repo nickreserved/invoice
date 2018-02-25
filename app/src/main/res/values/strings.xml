@@ -1,10 +1,8 @@
 <resources>
     <string name="app_name">Τιμολόγιο Δαπάνης Στρατού</string>
     <string name="about">Σχετικά</string>
-    <string name="aboutInfo">Υπολογισμός στοιχείων τιμολογίου για δαπάνη Στρατού Ξηράς\n\nΠαύλος Γκέσος (ΣΣΕ 2002)\nΈκδοση %1$s</string>
+    <string name="aboutInfo">Υπολογισμός στοιχείων τιμολογίου για δαπάνη Στρατού Ξηράς\n\nΠαύλος Γκέσος (ΣΣΕ 2002)\nΈκδοση %1$d</string>
 	<string name="web">Ιστοσελίδα</string>
-    <string name="OK">Εντάξει</string>
-    <string name="Cancel">Ακύρωση</string>
     <string name="contractor">Προμηθευτής</string>
     <string name="hintAmount">Ποσό (€)</string>
     <string name="FPA">ΦΠΑ (%)</string>
@@ -77,9 +75,12 @@
     </string-array>
 
     <string-array name="FPA">
-		<item>23</item>
+		<item>24</item>
 		<item>13</item>
-		<item>6</item>
+	    <item>6</item>
+	    <item>17</item>
+	    <item>9</item>
+	    <item>4</item>
         <item>0</item>
         <item>Άλλο</item>
     </string-array>
