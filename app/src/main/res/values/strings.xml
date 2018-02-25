@@ -1,0 +1,110 @@
+<resources>
+    <string name="app_name">Τιμολόγιο Δαπάνης Στρατού</string>
+    <string name="about">Σχετικά</string>
+    <string name="aboutInfo">Υπολογισμός στοιχείων τιμολογίου για δαπάνη Στρατού Ξηράς\n\nΠρογραμματισμός: Παύλος Γκέσος\nΈκδοση: 10 Οκτ 2015\n\nΑποτελεί την πρώτη μου εφαρμογή σε Android!</string>
+    <string name="OK">Εντάξει</string>
+    <string name="Cancel">Ακύρωση</string>
+    <string name="contractor">Προμηθευτής</string>
+    <string name="hintAmount">Ποσό (€)</string>
+    <string name="FPA">ΦΠΑ (%)</string>
+    <string name="FPAInfo">Όλα τα είδη του τιμολογίου πρέπει να έχουν το ίδιο ΦΠΑ. Το αντίθετο δεν υποστηρίζεται.</string>
+    <string name="automatic">Κρατήσεις &amp; ΦΕ, αυτόματα</string>
+    <string name="Holds">Κρατήσεις (%)</string>
+    <string name="FE">ΦΕ (%)</string>
+
+    <string name="cbSelf">Αυτοχρηματοδοτούμενο</string>
+    <string name="tvSelfInfo">Η χρηματοδότηση της δαπάνης προέρχεται από ιδίους πόρους (Λέσχες, Πρατήρια)</string>
+    <string name="tvInvoiceType">Τύπος τιμολογίου</string>
+    <string name="cbConstruction">Κατασκευή ή συντήρηση εγκαταστάσεων</string>
+
+    <string name="newValue">Δώστε μια νέα τιμή (%)</string>
+    <string name="existedValue">Η τιμή υπάρχει ήδη</string>
+    <string name="invalidValue">Η τιμή δεν είναι έγκυρη</string>
+
+    <string name="requirements">Απαιτήσεις</string>
+    <string name="reqContract">Σύναψη σύμβασης με τον προμηθευτή</string>
+    <string name="reqCompetitionInformal">Πρόχειρος διαγωνισμός</string>
+    <string name="reqCompetitionFormal">Δημόσιος διαγωνισμός</string>
+    <string name="reqTaxCurrency">Φορολογική ενημερότητα, για «πληρωμή από το Δημόσιο»</string>
+    <string name="reqInsuranceCurrency">Ασφαλιστική ενημερότητα</string>
+
+    <string name="resNet">Καθαρή αξία</string>
+    <string name="resVAT">+ ΦΠΑ</string>
+    <string name="resMixed">Καταλογιστέο</string>
+    <string name="resHolds">Κρατήσεις</string>
+    <string name="resFinal">Πληρωτέο</string>
+    <string name="resFE">‒ ΦΕ</string>
+    <string name="resFinal2">Υπόλοιπο πληρωτέο</string>
+
+    <string-array name="contractors">
+        <item>Ιδιώτης</item>
+        <item>Ιδιώτης (όχι κρατήσεις)</item>
+        <item>Δημόσιο</item>
+        <item>Στρατός</item>
+    </string-array>
+    <string-array name="contractorInfo">
+        <item />
+        <item>Ο ιδιώτης θέλει να προσαυξήσει την καθαρή αξία για να μη χρεωθεί τις κρατήσεις (παράνομο).</item>
+        <item>ΔΕΗ, ΟΣΕ, κ.τ.λ.</item>
+        <item>Στρατιωτικά πρατήρια</item>
+    </string-array>
+
+    <string-array name="amountType">
+        <item>Καθαρή αξία</item>
+        <item>Καταλογιστέο</item>
+        <item>Πληρωτέο</item>
+        <item>Υπόλοιπο πληρωτέο</item>
+    </string-array>
+
+    <string-array name="FPA">
+        <item>0</item>
+        <item>6</item>
+        <item>13</item>
+        <item>23</item>
+        <item>Άλλο</item>
+    </string-array>
+
+    <string-array name="Holds">
+        <item>0</item>
+        <item>4</item>
+        <item>4.096</item>
+        <item>4.1996</item>
+        <item>4.6092</item>
+        <item>5.12</item>
+        <item>5.2236</item>
+        <item>10</item>
+        <item>14</item>
+        <item>14.096</item>
+        <item>14.1996</item>
+        <item>15.12</item>
+        <item>15.2236</item>
+        <item>Άλλο</item>
+    </string-array>
+
+    <string-array name="FE">
+        <item>0</item>
+        <item>1</item>
+        <item>3</item>
+        <item>4</item>
+        <item>8</item>
+        <item>Άλλο</item>
+    </string-array>
+    <string-array name="FEInfo">
+        <item>Δημόσιο, Στρατός, Καθαρή αξία ≤ 150€</item>
+        <item>@string/oil</item>
+        <item>Παροχή υπηρεσιών (εργολαβία) σε δαπάνη κατασκευής έργου</item>
+        <item>@string/buy</item>
+        <item>@string/service</item>
+    </string-array>
+
+    <string-array name="InvoiceType">
+        <item>@string/buy</item>
+        <item>@string/service</item>
+        <item>@string/oil</item>
+    </string-array>
+
+    <string name="buy">Προμήθεια υλικών</string>
+    <string name="service">Παροχή υπηρεσιών</string>
+    <string name="oil">Προμήθεια υγρών καυσίμων</string>
+
+</resources>

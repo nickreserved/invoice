@@ -1,0 +1,221 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true" >
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/contractor"
+            android:id="@+id/tvContractor"
+            android:textAppearance="@android:style/TextAppearance.Widget"
+            android:paddingTop="@dimen/textview_vertical_padding" />
+
+        <Spinner
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/spContractorType"
+            android:entries="@array/contractors"
+            android:layout_toEndOf="@id/tvContractor" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/tvContractorInfo"
+            android:layout_below="@id/spContractorType"
+            android:visibility="gone" />
+
+        <Spinner
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/spAmountType"
+            android:entries="@array/amountType"
+            android:layout_below="@id/tvContractorInfo"
+            android:layout_marginTop="@dimen/module_vertical_margin" />
+
+        <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:inputType="numberDecimal"
+            android:id="@+id/txtAmount"
+            android:layout_alignTop="@id/spAmountType"
+            android:layout_toEndOf="@id/spAmountType"
+            android:textAppearance="@android:style/TextAppearance.Widget"
+            android:hint="@string/hintAmount" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/layFPA"
+            android:layout_below="@id/spAmountType"
+            android:layout_marginTop="@dimen/module_vertical_margin">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/FPA"
+                android:id="@+id/tvFPA"
+                android:textAppearance="@android:style/TextAppearance.Widget"
+                android:paddingTop="@dimen/textview_vertical_padding" />
+
+            <Spinner
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/spFPA"
+                android:layout_toEndOf="@id/tvFPA" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/FPAInfo"
+                android:layout_below="@id/spFPA" />
+
+        </RelativeLayout>
+
+        <Switch
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/automatic"
+            android:id="@+id/swAuto"
+            android:layout_below="@+id/layFPA"
+            android:layout_marginTop="@dimen/module_vertical_margin" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/layAutomatic"
+            android:layout_marginTop="@dimen/module_vertical_margin"
+            android:layout_below="@+id/swAuto"
+            android:visibility="gone">
+
+            <CheckBox
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/cbSelf"
+                android:text="@string/cbSelf" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/tvSelfInfo"
+                android:id="@+id/tvSelfInfo"
+                android:layout_below="@id/cbSelf" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/tvInvoiceType"
+                android:id="@+id/tvInvoiceType"
+                android:textAppearance="@android:style/TextAppearance.Widget"
+                android:layout_marginTop="@dimen/module_vertical_margin"
+                android:paddingTop="@dimen/textview_vertical_padding"
+                android:layout_below="@id/tvSelfInfo" />
+
+            <Spinner
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/spInvoiceType"
+                android:entries="@array/InvoiceType"
+                android:layout_alignTop="@id/tvInvoiceType"
+                android:layout_toEndOf="@id/tvInvoiceType" />
+
+            <CheckBox
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/cbConstruction"
+                android:text="@string/cbConstruction"
+                android:layout_marginTop="@dimen/module_vertical_margin"
+                android:layout_below="@id/spInvoiceType" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/layAdvanced"
+            android:layout_marginTop="@dimen/module_vertical_margin"
+            android:layout_below="@id/layAutomatic">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/Holds"
+                android:id="@+id/tvHolds"
+                android:textAppearance="@android:style/TextAppearance.Widget"
+                android:paddingTop="@dimen/textview_vertical_padding" />
+
+            <Spinner
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/spHolds"
+                android:layout_toEndOf="@id/tvHolds" />
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/layFE"
+                android:layout_below="@id/spHolds"
+                android:layout_marginTop="@dimen/module_vertical_margin">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/FE"
+                    android:id="@+id/tvFE"
+                    android:textAppearance="@android:style/TextAppearance.Widget"
+                    android:paddingTop="@dimen/textview_vertical_padding" />
+
+                <Spinner
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/spFE"
+                    android:layout_toEndOf="@id/tvFE" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/tvFEInfo"
+                    android:text="@string/buy"
+                    android:layout_below="@id/spFE" />
+
+            </RelativeLayout>
+
+        </RelativeLayout>
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/layOut"
+            android:visibility="gone"
+            android:layout_marginTop="@dimen/module_vertical_margin"
+            android:layout_below="@id/layAdvanced">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/tvResults"
+                android:gravity="end"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/requirements"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:layout_marginTop="@dimen/module_vertical_margin" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/tvRequirements" />
+
+        </LinearLayout>
+
+    </RelativeLayout>
+
+</ScrollView>
