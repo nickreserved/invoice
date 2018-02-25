@@ -14,8 +14,7 @@
     <string name="FE">ΦΕ (%)</string>
 	<string name="hldOther">Άλλο</string>
 
-	<string name="cbSelf">Αυτοχρηματοδοτούμενο</string>
-    <string name="tvSelfInfo">Η χρηματοδότηση της δαπάνης προέρχεται από ιδίους πόρους (Λέσχες, Πρατήρια)</string>
+	<string name="tvFinancing">Χρηματοδότηση</string>
     <string name="tvInvoiceType">Τύπος τιμολογίου</string>
     <string name="cbConstruction">Κατασκευή ή συντήρηση εγκαταστάσεων</string>
 
@@ -59,13 +58,15 @@
 
     <string-array name="contractors">
         <item>Ιδιώτης</item>
-        <item>Δημόσιο</item>
+        <item>ΝΠΔΔ</item>
         <item>Στρατός</item>
+		<item>Ύδρευση, Έργα ΔΕΗ</item>
     </string-array>
     <string-array name="contractorInfo">
-        <item />
-        <item>ΔΕΗ, ΟΣΕ, κ.τ.λ.</item>
-        <item>Στρατιωτικά πρατήρια</item>
+		<item>Ιδιώτες προμηθευτές, εργολάβοι, μάστορες κ.τ.λ.</item>
+        <item>Νομικά Πρόσωπα Δημοσίου Δικαίου (π.χ. ΟΣΕ)</item>
+		<item>Στρατιωτικά πρατήρια</item>
+		<item>Λογαριασμοί ύδρευσης - αποχέτευσης ή έργα της ΔΕΗ</item>
     </string-array>
 
     <string-array name="amountType">
@@ -111,5 +112,13 @@
     <string name="buy">Προμήθεια υλικών</string>
     <string name="service">Παροχή υπηρεσιών</string>
     <string name="oil">Προμήθεια υγρών καυσίμων</string>
+
+	<string-array name="FinancingType">
+		<item>Τακτικός Π/Υ</item>
+		<item>Ίδιοι πόροι</item>
+		<item>Π/Υ ΠΔΕ</item>
+	</string-array>
+
+	<string name="errorFinancing">Π/Υ ΠΔΕ δεν μπορεί να χρησιμοποιηθεί με αυτόν τον τύπο προμηθευτή</string>
 
 </resources>

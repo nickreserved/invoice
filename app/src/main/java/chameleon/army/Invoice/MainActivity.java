@@ -36,7 +36,7 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
 	static private final String AMOUNT_TYPE = "ΤύποςΠοσού";
 	static private final String AMOUNT = "Ποσό";
 	static private final String AUTOMATIC = "Αυτόματο";
-	static private final String SELF_PAYED = "Αυτοχρηματοδοτούμενο";
+	static private final String FINANCING_TYPE = "Χρηματοδότηση";
 	static private final String CONSTRUCTION = "Εγκαταστάσεις";
 
 	@Override
@@ -47,20 +47,21 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
 
 		setSpinner(R.id.spFPA, R.array.FPA, pref.getInt(FPA, 24));
 		setSpinner(R.id.spFE, R.array.FE, pref.getInt(FE, 4));
-		setSpinner(R.id.spHolds, holdList, pref.getInt(HOLDS, 415816) / 100000.0);	// 4.15816
+		setSpinner(R.id.spHolds, holdList, pref.getInt(HOLDS, 409600) / 100000.0);	// 4.096
 		((ArrayAdapter) ((Spinner) findViewById(R.id.spHolds)).getAdapter()).add(getString(R.string.hldOther));
 
 		Spinner spinner = (Spinner) findViewById(R.id.spContractorType);
 		spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(final AdapterView<?> parentView, View selectedItemView, int position, long id) {
-				TextView tv = (TextView) findViewById(R.id.tvContractorInfo);
+				((TextView) findViewById(R.id.tvContractorInfo)).setText(getResources().getStringArray(R.array.contractorInfo)[position]);
+				/*TextView tv = (TextView) findViewById(R.id.tvContractorInfo);
 				String s = getResources().getStringArray(R.array.contractorInfo)[position];
 				if (s.equals("")) tv.setVisibility(View.GONE);
 				else {
 					tv.setText(s);
 					tv.setVisibility(View.VISIBLE);
-				}
+				}*/
 				findViewById(R.id.layFE).setVisibility(position != 0 /* Όχι ιδιώτης */ ? View.GONE : View.VISIBLE);
 				findViewById(R.id.layFPA).setVisibility(position == 2 /* Στρατός */ ? View.GONE : View.VISIBLE);
 				findViewById(R.id.cbConstruction).setVisibility(position != 0 /* Όχι ιδιώτης */ ? View.GONE : View.VISIBLE);
@@ -83,6 +84,9 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
 		spinner = (Spinner) findViewById(R.id.spInvoiceType);
 		spinner.setOnItemSelectedListener(swListener);
 		spinner.setSelection(pref.getInt(INVOICE_TYPE, 0));
+		spinner = (Spinner) findViewById(R.id.spFinancingType);
+		spinner.setOnItemSelectedListener(swListener);
+		spinner.setSelection(pref.getInt(FINANCING_TYPE, 0));
 
         EditText editText = (EditText) findViewById(R.id.txtAmount);
 		editText.addTextChangedListener(new TextWatcher() {
@@ -114,9 +118,6 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
         CompoundButton.OnCheckedChangeListener cbListener = new CompoundButton.OnCheckedChangeListener() {
             @Override public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) { calculation(); }
         };
-        checkBox = (CompoundButton) findViewById(R.id.cbSelf);
-		checkBox.setOnCheckedChangeListener(cbListener);
-		checkBox.setChecked(pref.getBoolean(SELF_PAYED, false));
 		checkBox = (CompoundButton) findViewById(R.id.cbConstruction);
         checkBox.setOnCheckedChangeListener(cbListener);
 		checkBox.setChecked(pref.getBoolean(CONSTRUCTION, false));
@@ -241,7 +242,7 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
 		edit.putInt(AMOUNT_TYPE, ((Spinner) findViewById(R.id.spAmountType)).getSelectedItemPosition());
 		edit.putInt(INVOICE_TYPE, ((Spinner) findViewById(R.id.spInvoiceType)).getSelectedItemPosition());
 		edit.putBoolean(AUTOMATIC, ((Switch) findViewById(R.id.swAuto)).isChecked());
-		edit.putBoolean(SELF_PAYED, ((CheckBox) findViewById(R.id.cbSelf)).isChecked());
+		edit.putInt(FINANCING_TYPE, ((Spinner) findViewById(R.id.spFinancingType)).getSelectedItemPosition());
 		edit.putBoolean(CONSTRUCTION, ((CheckBox) findViewById(R.id.cbConstruction)).isChecked());
 		edit.putInt(FPA, Integer.parseInt(((Spinner) findViewById(R.id.spFPA)).getSelectedItem().toString()));
 		edit.putInt(FE, Integer.parseInt(((Spinner) findViewById(R.id.spFE)).getSelectedItem().toString()));
@@ -272,7 +273,8 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
                         // default: Καθαρή αξία
                 }
                 break;
-            case 1:	// Δημόσιο
+            case 1:	// ΝΠΔΔ
+			case 3: // Ύδρευση, Έργα ΔΕΗ
                 switch(amountType) {
                     case 1: amount /= 1.0 + fpa + holds; break;	// Καταλογιστέο
                     case 2: case 3: amount /= 1.0 + fpa; // Πληρωτέο ή Υπόλοιπο πληρωτέο
@@ -304,21 +306,42 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
             // Το πρόβλημα εδώ είναι ότι δεν ξέρουμε την καθαρή αξία!
             // Για το λόγο αυτό κάποιοι έλεγχοι θα γίνουν μεταγενέστερα.
             if (auto) {
-				boolean self = ((CompoundButton) findViewById(R.id.cbSelf)).isChecked();
+				int financing = ((Spinner) findViewById(R.id.spFinancingType)).getSelectedItemPosition();
 				// Σε κατασκευαστικές δαπάνες, προμηθευτής είναι πάντα ιδιώτης
-				if (contractor != 0) construction = false;	 // Όχι ιδιώτης
-                // Υπολογισμός του ΦΕ
-                if (contractor != 0) fePercent = 0;	 // Όχι ιδιώτης
-                // Μεταγενέστερα: if (net <= 150) fePercent = 0;
-                else if (invoiceType == 2) fePercent = 0.01; // Προμήθεια υγρών καυσίμων
-                else if (invoiceType == 1) /* Παροχή υπηρεσιών */ fePercent = construction /* Κατασκευή έργου */ ? 0.03 : 0.08;
-                else /*if (invoiceType == 0)*/ fePercent = 0.04; // Προμήθεια υλικών
-                // Υπολογισμός κρατήσεων
-                if (contractor != 0) /* Όχι ιδιώτης */ hold = getHold(holdsPercent = self /* Ιδιοι πόροι */ ? 0.14 : 0.04);
-                else {
-                    hold = getHold(holdsPercent = self /* Ιδιοι πόροι */ ? 0.1415816 : 0.0415816);
-                    if (calculateNet(contractor, amountType, amount, fpaPercent, holdsPercent, fePercent) > 2500)
-                        hold = getHold(holdsPercent = self /* Ιδιοι πόροι */ ? 0.1422032 : 0.0422032);
+				if (contractor != 0) construction = false;     // Όχι ιδιώτης
+				// Υπολογισμός του ΦΕ
+				if (contractor != 0) fePercent = 0;     // Όχι ιδιώτης
+					// Μεταγενέστερα: if (net <= 150) fePercent = 0;
+				else if (invoiceType == 2) fePercent = 0.01; // Προμήθεια υγρών καυσίμων
+				else if (invoiceType == 1) /* Παροχή υπηρεσιών */
+					fePercent = construction /* Κατασκευή έργου */ ? 0.03 : 0.08;
+				else /*if (invoiceType == 0)*/ fePercent = 0.04; // Προμήθεια υλικών
+				// Υπολογισμός κρατήσεων
+				if (contractor != 0 /* Όχι ιδιώτης */)
+					if (contractor == 3 /* Ύδρευση, Έργα ΔΕΗ */) holdsPercent = 0;
+					else {
+						switch (financing) {
+							case 0: /* Τακτικός Π/Υ */ holdsPercent = 0.04; break;
+							case 1: /* Ιδιοι πόροι */ holdsPercent = 0.14; break;
+							default: /*case 2:*/ /* Π/Υ ΠΔΕ */ holdsPercent = 0; break;
+						}
+						hold = getHold(holdsPercent);
+					}
+				else {
+					switch(financing) {
+						case 0: /* Τακτικός Π/Υ */ holdsPercent = 0.04096; break;
+						case 1: /* Ιδιοι πόροι */ holdsPercent = 0.14096; break;
+						default: /*case 2:*/ holdsPercent = 0; break;
+					}
+					hold = getHold(holdsPercent);
+					if (calculateNet(contractor, amountType, amount, fpaPercent, holdsPercent, fePercent) > 2500) {
+						switch(financing) {
+							case 0: /* Τακτικός Π/Υ */ holdsPercent = 0.0422032; break;
+							case 1: /* Ιδιοι πόροι */ holdsPercent = 0.1422032; break;
+							default: /*case 2:*/ holdsPercent = 0.0012432; break;
+						}
+						hold = getHold(holdsPercent);
+					}
                 }
                 // Μεταγενέστερος έλεγχος: if (net <= 150) fePercent = 0;
                 if (calculateNet(contractor, amountType, amount, fpaPercent, holdsPercent, 0) <= 150) fePercent = 0;
@@ -336,7 +359,7 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
 			double holds = Math.round(amount * holdsPercent * 100.0) / 100.0;
 			double mixed = amount;
 			if (contractor != 2) mixed += fpa;	// όχι Στρατός
-			if (contractor != 0) mixed += holds;	// Δημόσιο, Στρατός
+			if (contractor != 0) mixed += holds;	// ΝΠΔΔ, Στρατός
 			//mixed = Math.round(mixed * 100.0) / 100.0;	// fix truncation errors
 			double final1 = mixed - holds;//Math.round((mixed - holds) * 100.0) / 100.0;	// fix truncation errors
 			double fe = amount - (fePercent == 0.03 ? 0 : holds);
@@ -347,7 +370,7 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
 			DecimalFormat df2 = new DecimalFormat("0.00¤");	// νομισματικά
 			String txt = String.format(getString(R.string.resNet), df2.format(amount));
 			String txtHolds = String.format(getString(R.string.resHolds), df.format(holdsPercent), df2.format(holds));
-			if (contractor != 0 /* Δημόσιο, Στρατός */) txt += "+ " + txtHolds;
+			if (contractor != 0 /* ΝΠΔΔ, Στρατός, Ύδρευση-Έργα ΔΕΗ */) txt += "+ " + txtHolds;
 			if (contractor != 2 /* όχι Στρατός */) txt += String.format(getString(R.string.resVAT), df.format(fpaPercent), df2.format(fpa));
 			txt += String.format(getString(R.string.resMixed), df2.format(mixed), txtHolds, df2.format(final1));
 			if (contractor == 0 /* Ιδιώτης */ && fePercent > 0)
@@ -388,14 +411,20 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
 
 	//                             ΜΤΣ,    Χαρτόσημο, ΟΓΑ,       ΕΑΑΔΗΣΥ, ΑΕΠΠ,  ΒΑΜ, ΕΚΟΕΜΣ
 	final private Hold[] holdList = {
-			new Hold(new double[] {0.04,    0.000818, 0.0001636, 0,      0.0006}),				// 4.15816
+			new Hold(new double[] {0.04,    0.0008,   0.00016}),								// 4.096
 			new Hold(new double[] {0.04,    0.000836, 0.0001672, 0.0006, 0.0006}), 				// 4.22032
 			new Hold(new double[] {0.03904, 0.0008,   0.00016}),								// 4
-			new Hold(new double[] {0,       0.000036, 0.0000072, 0.0006, 0.0006}),				// 0.12392
+			new Hold(new double[] {0,       0.000036, 0.0000072, 0.0006, 0.0006}),				// 0.12432
 			new Hold(new double[] {0,       0,        0,         0,      0,      0.02, 0.08}),	// 10
 			new Hold(new double[] {0.03904, 0.0008,   0.00016,   0,      0,      0.02, 0.08}),	// 14
-			new Hold(new double[] {0.04,    0.000818, 0.0001636, 0,      0.0006, 0.02, 0.08}),	// 14.15816
+			new Hold(new double[] {0.04,    0.0008,   0.00016,   0,      0,      0.02, 0.08}),	// 14.096
 			new Hold(new double[] {0.04,    0.000836, 0.0001672, 0.0006, 0.0006, 0.02, 0.08}),	// 14.22032
+			new Hold(new double[0]),															// 0
+			// Αμοιβές μελετητών
+			new Hold(new double[] {0.04,    0.002,    0.0004}),									// 4.24
+			new Hold(new double[] {0.04,    0.002036, 0.0004072, 0.0006, 0.0006}), 				// 4.36432
+			new Hold(new double[] {0,       0.002,    0.0004}),				 					// 0.24
+			new Hold(new double[] {0,       0.002036, 0.0004072, 0.0006, 0.0006}), 				// 0.36432
 	};
 
 	private class Hold {

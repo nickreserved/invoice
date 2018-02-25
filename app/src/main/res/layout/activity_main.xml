@@ -32,8 +32,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/tvContractorInfo"
-            android:layout_below="@id/tvContractor"
-            android:visibility="gone" />
+            android:layout_below="@id/tvContractor" />
 
         <Spinner
             android:layout_width="wrap_content"
@@ -110,18 +109,22 @@
             android:layout_marginTop="@dimen/module_vertical_margin"
             android:layout_below="@+id/tvAutoInfo">
 
-            <CheckBox
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/cbSelf"
-                android:text="@string/cbSelf" />
+			<TextView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@string/tvFinancing"
+				android:id="@+id/tvFinancing"
+				android:textAppearance="@android:style/TextAppearance.Widget.TextView"
+				android:labelFor="@+id/spContractorType" />
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/tvSelfInfo"
-                android:id="@+id/tvSelfInfo"
-                android:layout_below="@id/cbSelf" />
+			<Spinner
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:id="@+id/spFinancingType"
+				android:entries="@array/FinancingType"
+				android:layout_alignBaseline="@id/tvFinancing"
+				android:layout_toEndOf="@id/tvFinancing"
+				android:layout_toRightOf="@id/tvFinancing" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -132,7 +135,7 @@
                 android:layout_marginTop="@dimen/module_vertical_margin"
                 android:labelFor="@+id/spInvoiceType"
                 android:paddingTop="@dimen/textview_vertical_padding"
-                android:layout_below="@id/tvSelfInfo" />
+                android:layout_below="@id/tvFinancing" />
 
             <Spinner
                 android:layout_width="wrap_content"
