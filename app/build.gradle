@@ -2,21 +2,31 @@ apply plugin: 'com.android.application'
 
 android {
 	compileSdkVersion 27
-	buildToolsVersion "27.0.1"
+	buildToolsVersion '27.0.3'
 	defaultConfig {
 		applicationId 'chameleon.army.Invoice'
 		minSdkVersion 14
 		targetSdkVersion 27
-		versionCode 7
+		versionCode 10
 		signingConfig signingConfigs.config
 	}
 	buildTypes {
 		release {
 			minifyEnabled true
 			proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+			debuggable false
+			signingConfig signingConfigs.config
+		}
+		debug {
+			debuggable true
+			minifyEnabled false
 		}
 	}
 	productFlavors {
+	}
+	compileOptions {
+		sourceCompatibility JavaVersion.VERSION_1_8
+		targetCompatibility JavaVersion.VERSION_1_8
 	}
 }
 

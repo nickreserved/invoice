@@ -8,15 +8,14 @@
     <string name="FPA">ΦΠΑ (%)</string>
     <string name="FPAInfo">Όλα τα είδη του τιμολογίου πρέπει να έχουν το ίδιο ΦΠΑ. Το αντίθετο δεν υποστηρίζεται.</string>
     <string name="automatic">Κρατήσεις &amp; ΦΕ, αυτόματα</string>
-    <string name="tvAutoOn">Με την Φ.830/60/918814/Σ.5965/02 Σεπ 16/ΓΕΣ/ΔΟΙ/3α και την ΚΥΑ 1191/14 Μαρ 17 (ΦΕΚ Β\' 969)</string>
+    <string name="tvAutoOn">Με την Φ.830/5/1386358/Σ.759/14 Φεβ 18/ΓΕΣ/ΔΟΙ</string>
 	<string name="tvAutoOff">Μόνο για έμπειρους χρήστες με ευχέρεια στις δαπάνες</string>
     <string name="Holds">Κρατήσεις (%)</string>
     <string name="FE">ΦΕ (%)</string>
-	<string name="hldOther">Άλλο</string>
 
 	<string name="tvFinancing">Χρηματοδότηση</string>
     <string name="tvInvoiceType">Τύπος τιμολογίου</string>
-    <string name="cbConstruction">Κατασκευή ή συντήρηση εγκαταστάσεων</string>
+    <string name="cbConstruction">Πίστωση ΓΕΣ/ΔΙΠΠΕ</string>
 
     <string name="newValue">Δώστε μια νέα τιμή (%)</string>
     <string name="existedValue">Η τιμή υπάρχει ήδη</string>
@@ -31,7 +30,7 @@
     <string name="reqInsuranceCurrency">‒ Ασφαλιστική ενημερότητα (Φ.830/56/999997/Σ.5711/18 Οκτ 17/ΓΕΣ/ΔΟΙ)</string>
 	<string name="reqCriminalRecord">‒ Απόσπασμα ποινικού μητρώου (Φ.830/56/999997/Σ.5711/18 Οκτ 17/ΓΕΣ/ΔΟΙ)</string>
 	<string name="reqCriminalRecordDenial">‒ Ο εργολάβος δεν πρέπει να έχει αριθμό καταδικαστικών αποφάσεων εργατικής φύσεως την τελευταία διετία (Φ.830/56/999997/Σ.5711/18 Οκτ 17/ΓΕΣ/ΔΟΙ)</string>
-	<string name="reqConstructionContractor">‒ Ο εργολάβος πρέπει να μας υποβάλει αποδεικτικά κατάθεσης (%% της καθαρής αξίας) για:\n\t• 1%% ΤΠΕΔΕ (%1$s) μαζί με τα χαρτόσημα\n\t• 0.5%% ΕΜΠ (%2$s) μαζί με τα χαρτόσημα\n\t• 0.6%% Π.Ο. ΕΜ∆Υ∆ΑΣ (%3$s) στο λογαριασμό ΙΒΑΝ: GR5701100800000008000587009 (Φ.830/58/1001504/Σ.5959/1 Νοε 17/ΓΕΣ/ΔΟΙ)</string>
+	<string name="reqConstructionContractor">‒ Ο εργολάβος πρέπει να μας υποβάλει αποδεικτικά κατάθεσης (%% της καθαρής αξίας) για:\n\t• 1%% ΤΠΕΔΕ (%1$s) μαζί με τα χαρτόσημα\n\t• 0.6%% Π.Ο. ΕΜ∆Υ∆ΑΣ (%2$s) στο λογαριασμό ΙΒΑΝ: GR5701100800000008000587009</string>
 
     <string name="results">Αποτελέσματα</string>
     <string name="resNet">Καθαρή αξία:\t\t%1$s\n</string>
@@ -53,22 +52,17 @@
 		<item>ΑΕΠΠ</item>
 		<item>ΒΑΜ</item>
 		<item>ΕΚΟΕΜΣ</item>
-		<item>ΑΟΟΑ</item>
-		<item>ΤΑΥΥΕ</item>
-		<item>ΓΓΚΠ</item>
 	</string-array>
 
     <string-array name="contractors">
         <item>Ιδιώτης</item>
         <item>ΝΠΔΔ</item>
         <item>Στρατός</item>
-		<item>Ύδρευση, Έργα ΔΕΗ</item>
     </string-array>
     <string-array name="contractorInfo">
 		<item>Ιδιώτες προμηθευτές, εργολάβοι, μάστορες κ.τ.λ.</item>
         <item>Νομικά Πρόσωπα Δημοσίου Δικαίου (π.χ. ΟΣΕ)</item>
 		<item>Στρατιωτικά πρατήρια</item>
-		<item>Λογαριασμοί ύδρευσης - αποχέτευσης ή έργα της ΔΕΗ</item>
     </string-array>
 
     <string-array name="amountType">
@@ -78,49 +72,34 @@
         <item>Υπόλοιπο πληρωτέο</item>
     </string-array>
 
-    <string-array name="FPA">
-		<item>24</item>
-		<item>13</item>
-	    <item>6</item>
-	    <item>17</item>
-	    <item>9</item>
-	    <item>4</item>
-        <item>0</item>
-        <item>Άλλο</item>
-    </string-array>
-
-    <string-array name="FE">
-		<item>4</item>
-		<item>8</item>
-		<item>3</item>
-		<item>1</item>
-        <item>0</item>
-        <item>Άλλο</item>
-    </string-array>
     <string-array name="FEInfo">
-		<item>@string/buy</item>
+		<item>Προμήθεια υλικών, εκπόνηση μελέτης μηχανικού</item>
 		<item>@string/service</item>
 		<item>Παροχή υπηρεσιών (εργολαβία) σε δαπάνη κατασκευής έργου</item>
 		<item>@string/oil</item>
-        <item>Δημόσιο, Στρατός, Καθαρή αξία ≤ 150€</item>
+		<item>Επίβλεψη εφαρμογής μελέτης ή εκπόνηση μελέτης εκτός μηχανικού</item>
+        <item>Δημόσιο, Στρατός, Καθαρή αξία (όχι σε έργο ΜΧ) ≤ 150€</item>
     </string-array>
 
     <string-array name="InvoiceType">
         <item>@string/buy</item>
         <item>@string/service</item>
         <item>@string/oil</item>
+		<item>Μίσθωση ακινήτων</item>
+		<item>Λογαριασμοί ύδρευσης - αποχέτευσης ή έργα της ΔΕΗ</item>
+		<item>Εκπόνηση μελέτης μηχανικού</item>
+		<item>Επίβλεψη εφαρμογής μελέτης ή εκπόνηση μελέτης εκτός μηχανικού</item>
     </string-array>
 
-    <string name="buy">Προμήθεια υλικών</string>
-    <string name="service">Παροχή υπηρεσιών</string>
+	<string name="buy">Προμήθεια υλικών</string>
+	<string name="service">Παροχή υπηρεσιών</string>
     <string name="oil">Προμήθεια υγρών καυσίμων</string>
+	<string name="estate">Μίσθωση ακινήτων</string>
 
 	<string-array name="FinancingType">
 		<item>Τακτικός Π/Υ</item>
 		<item>Ίδιοι πόροι</item>
 		<item>Π/Υ ΠΔΕ</item>
 	</string-array>
-
-	<string name="errorFinancing">Π/Υ ΠΔΕ δεν μπορεί να χρησιμοποιηθεί με αυτόν τον τύπο προμηθευτή</string>
 
 </resources>

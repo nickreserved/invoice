@@ -126,25 +126,31 @@
 				android:layout_toEndOf="@id/tvFinancing"
 				android:layout_toRightOf="@id/tvFinancing" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/tvInvoiceType"
-                android:id="@+id/tvInvoiceType"
-                android:textAppearance="@android:style/TextAppearance.Widget.TextView"
-                android:layout_marginTop="@dimen/module_vertical_margin"
-                android:labelFor="@+id/spInvoiceType"
-                android:paddingTop="@dimen/textview_vertical_padding"
-                android:layout_below="@id/tvFinancing" />
+			<RelativeLayout
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:id="@+id/layInvoiceType"
+				android:layout_below="@id/spFinancingType"
+				android:layout_marginTop="@dimen/module_vertical_margin">
 
-            <Spinner
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/spInvoiceType"
-                android:entries="@array/InvoiceType"
-                android:layout_alignBaseline="@id/tvInvoiceType"
-                android:layout_toEndOf="@id/tvInvoiceType"
-                android:layout_toRightOf="@id/tvInvoiceType" />
+				<TextView
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:text="@string/tvInvoiceType"
+					android:id="@+id/tvInvoiceType"
+					android:textAppearance="@android:style/TextAppearance.Widget.TextView"
+					android:labelFor="@+id/spInvoiceType" />
+
+				<Spinner
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:id="@+id/spInvoiceType"
+					android:entries="@array/InvoiceType"
+					android:layout_alignBaseline="@id/tvInvoiceType"
+					android:layout_toEndOf="@id/tvInvoiceType"
+					android:layout_toRightOf="@id/tvInvoiceType" />
+
+			</RelativeLayout>
 
             <CheckBox
                 android:layout_width="wrap_content"
@@ -152,7 +158,7 @@
                 android:id="@+id/cbConstruction"
                 android:text="@string/cbConstruction"
                 android:layout_marginTop="@dimen/module_vertical_margin"
-                android:layout_below="@id/tvInvoiceType" />
+                android:layout_below="@id/layInvoiceType" />
 
         </RelativeLayout>
 
