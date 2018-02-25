@@ -380,14 +380,20 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
 			txt = "";
             if (contractor == 0) { // Ιδιώτης
                 if (mixed > 1500) txt += getString(R.string.reqTaxCurrency) + "\n";
-                if (mixed > 3000) txt += getString(R.string.reqInsuranceCurrency) + "\n";
+                //if (mixed > 3000) txt += getString(R.string.reqInsuranceCurrency) + "\n";
+				if (amount > 2500) {
+					txt += getString(R.string.reqInsuranceCurrency) + "\n";
+					txt += getString(R.string.reqCriminalRecord) + "\n";
+				}
             }
             if (contractor != 2 /* όχι Στρατός */ && (amount > 2500 || construction && auto)) txt += getString(R.string.reqContract) + "\n";
             if (amount > 60000) txt += getString(R.string.reqCompetitionFormal) + "\n";
-            else if (amount > 15000 || construction && auto) txt += getString(R.string.reqCompetitionInformal) + "\n";
+            else if (amount > 20000 || construction && auto) txt += getString(R.string.reqCompetitionInformal) + "\n";
+            if (amount > 20000) txt += getString(R.string.reqCriminalRecordDenial) + "\n";
 			if (auto && construction && invoiceType == 1 /* Παροχή υπηρεσιών */)
 				txt += String.format(getString(R.string.reqConstructionContractor) + "\n",
-						df2.format(amount * 0.01), df2.format(amount * 0.005));
+						df2.format(amount * 0.01), df2.format(amount * 0.005),
+						df2.format(amount * 0.006));
 			if (txt.equals("")) txt = getString(R.string.reqEmpty) + "\n";
 			((TextView) findViewById(R.id.tvRequirements)).setText(txt.substring(0, txt.length() - 1));	// remove last newline
 			// Ανάλυση κρατήσεων

@@ -28,8 +28,10 @@
     <string name="reqCompetitionInformal">‒ Πρόχειρος διαγωνισμός</string>
     <string name="reqCompetitionFormal">‒ Δημόσιος διαγωνισμός</string>
     <string name="reqTaxCurrency">‒ Φορολογική ενημερότητα, για «πληρωμή από το Δημόσιο»</string>
-    <string name="reqInsuranceCurrency">‒ Ασφαλιστική ενημερότητα</string>
-	<string name="reqConstructionContractor">‒ Ο εργολάβος πρέπει να μας υποβάλει αποδεικτικά κατάθεσης (%% της καθαρής αξίας) για:\n\t• 1%% ΤΠΕΔΕ (%1$s)\n\t• 0.5%% ΕΜΠ (%2$s),\nκαθώς και το αντίστοιχο χαρτόσημο και χαρτόσημο ΟΓΑ.</string>
+    <string name="reqInsuranceCurrency">‒ Ασφαλιστική ενημερότητα (Φ.830/56/999997/Σ.5711/18 Οκτ 17/ΓΕΣ/ΔΟΙ)</string>
+	<string name="reqCriminalRecord">‒ Απόσπασμα ποινικού μητρώου (Φ.830/56/999997/Σ.5711/18 Οκτ 17/ΓΕΣ/ΔΟΙ)</string>
+	<string name="reqCriminalRecordDenial">‒ Ο εργολάβος δεν πρέπει να έχει αριθμό καταδικαστικών αποφάσεων εργατικής φύσεως την τελευταία διετία (Φ.830/56/999997/Σ.5711/18 Οκτ 17/ΓΕΣ/ΔΟΙ)</string>
+	<string name="reqConstructionContractor">‒ Ο εργολάβος πρέπει να μας υποβάλει αποδεικτικά κατάθεσης (%% της καθαρής αξίας) για:\n\t• 1%% ΤΠΕΔΕ (%1$s) μαζί με τα χαρτόσημα\n\t• 0.5%% ΕΜΠ (%2$s) μαζί με τα χαρτόσημα\n\t• 0.6%% Π.Ο. ΕΜ∆Υ∆ΑΣ (%3$s) στο λογαριασμό ΙΒΑΝ: GR5701100800000008000587009 (Φ.830/58/1001504/Σ.5959/1 Νοε 17/ΓΕΣ/ΔΟΙ)</string>
 
     <string name="results">Αποτελέσματα</string>
     <string name="resNet">Καθαρή αξία:\t\t%1$s\n</string>
