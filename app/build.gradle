@@ -11,7 +11,7 @@ android {
         applicationId 'chameleon.army.Invoice'
         minSdkVersion 17
         targetSdkVersion 23
-        versionName '1.1'
+        versionName '2'
         signingConfig signingConfigs.config
     }
     buildTypes {

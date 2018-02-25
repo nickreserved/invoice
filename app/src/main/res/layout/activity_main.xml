@@ -193,27 +193,43 @@
             android:layout_height="wrap_content"
             android:id="@+id/layOut"
             android:visibility="gone"
-            android:layout_marginTop="@dimen/module_vertical_margin"
             android:layout_below="@id/layAdvanced">
 
-            <TextView
+			<TextView
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:text="@string/results"
+				style="?android:attr/listSeparatorTextViewStyle" />
+
+			<TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/tvResults"
                 android:gravity="end"
-                android:textAppearance="?android:attr/textAppearanceMedium" />
+                android:textAppearance="@android:style/TextAppearance.Widget" />
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/requirements"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:layout_marginTop="@dimen/module_vertical_margin" />
+			<TextView
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:text="@string/requirements"
+				style="?android:attr/listSeparatorTextViewStyle" />
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/tvRequirements" />
+			<TextView
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:id="@+id/tvRequirements" />
+
+			<TextView
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:text="@string/hldTitle"
+				style="?android:attr/listSeparatorTextViewStyle" />
+
+			<TextView
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:gravity="end"
+				android:id="@+id/tvHoldAnalysis" />
 
         </LinearLayout>
 

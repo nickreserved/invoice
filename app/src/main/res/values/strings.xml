@@ -1,7 +1,8 @@
 <resources>
     <string name="app_name">Τιμολόγιο Δαπάνης Στρατού</string>
     <string name="about">Σχετικά</string>
-    <string name="aboutInfo">Υπολογισμός στοιχείων τιμολογίου για δαπάνη Στρατού Ξηράς\n\nΠαύλος Γκέσος (ΣΣΕ 2002)\nΈκδοση %1$s\nhttp://ha-invoice.sourceforge.net/</string>
+    <string name="aboutInfo">Υπολογισμός στοιχείων τιμολογίου για δαπάνη Στρατού Ξηράς\n\nΠαύλος Γκέσος (ΣΣΕ 2002)\nΈκδοση %1$s</string>
+	<string name="web">Ιστοσελίδα</string>
     <string name="OK">Εντάξει</string>
     <string name="Cancel">Ακύρωση</string>
     <string name="contractor">Προμηθευτής</string>
@@ -11,8 +12,9 @@
     <string name="automatic">Κρατήσεις &amp; ΦΕ, αυτόματα</string>
     <string name="Holds">Κρατήσεις (%)</string>
     <string name="FE">ΦΕ (%)</string>
+	<string name="hldOther">Άλλο</string>
 
-    <string name="cbSelf">Αυτοχρηματοδοτούμενο</string>
+	<string name="cbSelf">Αυτοχρηματοδοτούμενο</string>
     <string name="tvSelfInfo">Η χρηματοδότηση της δαπάνης προέρχεται από ιδίους πόρους (Λέσχες, Πρατήρια)</string>
     <string name="tvInvoiceType">Τύπος τιμολογίου</string>
     <string name="cbConstruction">Κατασκευή ή συντήρηση εγκαταστάσεων</string>
@@ -22,6 +24,7 @@
     <string name="invalidValue">Η τιμή δεν είναι έγκυρη</string>
 
     <string name="requirements">Απαιτήσεις</string>
+	<string name="reqEmpty">Δεν υπάρχουν</string>
     <string name="reqContract">‒ Σύναψη σύμβασης με τον προμηθευτή</string>
     <string name="reqCompetitionInformal">‒ Πρόχειρος διαγωνισμός</string>
     <string name="reqCompetitionFormal">‒ Δημόσιος διαγωνισμός</string>
@@ -29,11 +32,29 @@
     <string name="reqInsuranceCurrency">‒ Ασφαλιστική ενημερότητα</string>
 	<string name="reqConstructionContractor">‒ Ο εργολάβος πρέπει να μας υποβάλει αποδεικτικά κατάθεσης για: (%% της καθαρής αξίας)\n\t\t• 0.5%% ΕΜΠ (%1$s)\n\t\t• 0.5%% ΤΣΜΕΔΕ (%1$s)\n\t\t• 0.5%% ΤΠΕΔΕ (%1$s)\n‒ Εργολάβος ασφαλισμένος στο ΤΣΜΕΔΕ πρέπει να μας υποβάλλει αποδεικτικά κατάθεσης για ΤΣΜΕΔΕ:\n\t\t• Προσωπική Εισφορά:\n\t\t\t\t▫ Για Γενική Εργολαβία: 2%% του 10%% (%2$s)\n\t\t\t\t▫ Για Τμηματικές Εργολαβίες: 2%% του 25%% (%1$s)\n\t\t• Υπέρ Τρίτων (Ν2166/93): 0.6%% (%3$s)</string>
 
-    <string name="resNet">Καθαρή αξία:\t%1$s\n</string>
+    <string name="results">Αποτελέσματα</string>
+    <string name="resNet">Καθαρή αξία:\t\t%1$s\n</string>
     <string name="resVAT">+ ΦΠΑ %1$s:\t\t%2$s\n</string>
-    <string name="resMixed">Καταλογιστέο:\t%1$s\n‒ %2$sΠληρωτέο:\t%3$s</string>
+    <string name="resMixed">Καταλογιστέο:\t\t%1$s\n‒ %2$sΠληρωτέο:\t\t%3$s</string>
     <string name="resHolds">Κρατήσεις %1$s:\t\t%2$s\n</string>
-    <string name="resFE">\n‒ ΦΕ %1$s:\t\t%2$s\nΥπόλοιπο πληρωτέο:\t%3$s</string>
+    <string name="resFE">\n‒ ΦΕ %1$s:\t\t%2$s\nΥπόλοιπο πληρωτέο:\t\t%3$s</string>
+
+	<string name="hldTitle">Ανάλυση Κρατήσεων</string>
+	<string name="hldFail">Για κρατήσεις που εισάγει ο χρήστης, η ανάλυση κρατήσεων δεν είναι διαθέσιμη</string>
+	<string name="hldTotal">ΣΥΝΟΛΟ</string>
+	<string name="hldPart">%1$s %2$s:\t\t%3$s\n</string>
+
+	<string-array name="hldParts">
+		<item>ΜΤΣ</item>
+		<item>Χαρτόσημο</item>
+		<item>ΟΓΑ</item>
+		<item>ΕΑΑΔΗΣΥ</item>
+		<item>ΒΑΜ</item>
+		<item>ΕΚΟΕΜΣ</item>
+		<item>ΑΟΟΑ</item>
+		<item>ΤΑΥΥΕ</item>
+		<item>ΓΓΚΠ</item>
+	</string-array>
 
     <string-array name="contractors">
         <item>Ιδιώτης</item>
@@ -54,44 +75,27 @@
     </string-array>
 
     <string-array name="FPA">
+		<item>23</item>
+		<item>13</item>
+		<item>6</item>
         <item>0</item>
-        <item>6</item>
-        <item>13</item>
-        <item>23</item>
-        <item>Άλλο</item>
-    </string-array>
-
-    <string-array name="Holds">
-        <item>0</item>
-        <item>4</item>
-        <item>4.096</item>
-        <item>4.1996</item>
-        <item>4.6092</item>
-        <item>5.12</item>
-        <item>5.2236</item>
-        <item>10</item>
-        <item>14</item>
-        <item>14.096</item>
-        <item>14.1996</item>
-        <item>15.12</item>
-        <item>15.2236</item>
         <item>Άλλο</item>
     </string-array>
 
     <string-array name="FE">
+		<item>4</item>
+		<item>8</item>
+		<item>3</item>
+		<item>1</item>
         <item>0</item>
-        <item>1</item>
-        <item>3</item>
-        <item>4</item>
-        <item>8</item>
         <item>Άλλο</item>
     </string-array>
     <string-array name="FEInfo">
+		<item>@string/buy</item>
+		<item>@string/service</item>
+		<item>Παροχή υπηρεσιών (εργολαβία) σε δαπάνη κατασκευής έργου</item>
+		<item>@string/oil</item>
         <item>Δημόσιο, Στρατός, Καθαρή αξία ≤ 150€</item>
-        <item>@string/oil</item>
-        <item>Παροχή υπηρεσιών (εργολαβία) σε δαπάνη κατασκευής έργου</item>
-        <item>@string/buy</item>
-        <item>@string/service</item>
     </string-array>
 
     <string-array name="InvoiceType">

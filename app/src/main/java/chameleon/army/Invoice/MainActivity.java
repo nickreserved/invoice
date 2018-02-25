@@ -3,11 +3,15 @@ package chameleon.army.Invoice;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.content.pm.PackageManager;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.Html;
 import android.text.InputType;
 import android.text.TextWatcher;
+import android.text.method.LinkMovementMethod;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -20,42 +24,40 @@ import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 
 public class MainActivity extends Activity implements AdapterView.OnItemSelectedListener {
-    public final static int DEFAULT_FPA = 3;	//23
-    public final static int DEFAULT_HOLDS = 3;	//4.1996
-    public final static int DEFAULT_FE = 3;		//4
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-		setSpinner(R.id.spFPA, R.array.FPA, DEFAULT_FPA);
-		setSpinner(R.id.spHolds, R.array.Holds, DEFAULT_HOLDS);
-		setSpinner(R.id.spFE, R.array.FE, DEFAULT_FE);
+		setSpinner(R.id.spFPA, R.array.FPA);
+		setSpinner(R.id.spFE, R.array.FE);
+		setSpinner(R.id.spHolds, holdList);
+		((ArrayAdapter) ((Spinner) findViewById(R.id.spHolds)).getAdapter()).add(getString(R.string.hldOther));
 
 		((Spinner) findViewById(R.id.spContractorType)).setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(final AdapterView<?> parentView, View selectedItemView, int position, long id) {
-                TextView tv = (TextView) findViewById(R.id.tvContractorInfo);
-                String s = getResources().getStringArray(R.array.contractorInfo)[position];
-                if (s.equals("")) tv.setVisibility(View.GONE);
-                else {
-                    tv.setText(s);
-                    tv.setVisibility(View.VISIBLE);
-                }
-                findViewById(R.id.layFE).setVisibility(position != 0 /* Όχι ιδιώτης */ ? View.GONE : View.VISIBLE);
-                findViewById(R.id.layFPA).setVisibility(position == 2 /* Στρατός */ ? View.GONE : View.VISIBLE);
-                findViewById(R.id.cbConstruction).setVisibility(position != 0 /* Όχι ιδιώτης */ ? View.GONE : View.VISIBLE);
-                calculation();
-            }
-            @Override  public void onNothingSelected(AdapterView<?> parentView) {}
-        });
+			@Override
+			public void onItemSelected(final AdapterView<?> parentView, View selectedItemView, int position, long id) {
+				TextView tv = (TextView) findViewById(R.id.tvContractorInfo);
+				String s = getResources().getStringArray(R.array.contractorInfo)[position];
+				if (s.equals("")) tv.setVisibility(View.GONE);
+				else {
+					tv.setText(s);
+					tv.setVisibility(View.VISIBLE);
+				}
+				findViewById(R.id.layFE).setVisibility(position != 0 /* Όχι ιδιώτης */ ? View.GONE : View.VISIBLE);
+				findViewById(R.id.layFPA).setVisibility(position == 2 /* Στρατός */ ? View.GONE : View.VISIBLE);
+				findViewById(R.id.cbConstruction).setVisibility(position != 0 /* Όχι ιδιώτης */ ? View.GONE : View.VISIBLE);
+				calculation();
+			}
+			@Override public void onNothingSelected(AdapterView<?> parentView) {}
+		});
 
         AdapterView.OnItemSelectedListener swListener = new AdapterView.OnItemSelectedListener() {
             @Override public void onItemSelected(final AdapterView<?> parentView, View selectedItemView, int position, long id) { calculation(); }
@@ -92,14 +94,17 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
         ((CheckBox) findViewById(R.id.cbConstruction)).setOnCheckedChangeListener(cbListener);
     }
 
+	// Κοινός κώδικας που σετάρει το spinner του ΦΠΑ και ΦΕ
+	void setSpinner(int resSpinner, int resArray) {
+		setSpinner(resSpinner, getResources().getStringArray(resArray));
+	}
 	// Κοινός κώδικας που σετάρει το spinner του ΦΠΑ, κρατήσεων και ΦΕ
-	void setSpinner(int resSpinner, int resArray, int def) {
+	<T> void setSpinner(int resSpinner, T[] array) {
 		Spinner spinner = (Spinner) findViewById(resSpinner);
-        ArrayAdapter<CharSequence> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item,
-				new ArrayList<CharSequence>(Arrays.asList(getResources().getStringArray(resArray))));
+		ArrayAdapter<T> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item,
+				new ArrayList<>(Arrays.asList(array)));
 		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		spinner.setAdapter(adapter);
-		spinner.setSelection(def);
 		spinner.setOnItemSelectedListener(this);
 	}
 
@@ -113,12 +118,17 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 		if (id == R.id.action_about) {
-            AlertDialog.Builder dlgAlert = new AlertDialog.Builder(this);
-            dlgAlert.setMessage(String.format(getString(R.string.aboutInfo), BuildConfig.VERSION_NAME));
-            dlgAlert.setTitle(R.string.about);
-            dlgAlert.setPositiveButton(R.string.OK, null);
-            dlgAlert.setCancelable(true);
-            dlgAlert.create().show();
+			new AlertDialog.Builder(this)
+					.setTitle(R.string.about)
+					.setMessage(String.format(getString(R.string.aboutInfo), BuildConfig.VERSION_NAME))
+					.setPositiveButton(R.string.OK, null)
+					.setNeutralButton(R.string.web, new DialogInterface.OnClickListener() {
+						@Override public void onClick(DialogInterface dialog, int which) {
+							startActivity(new Intent(Intent.ACTION_VIEW,Uri.parse("http://sourceforge.net/projects/ha-invoice/files/latest/download")));
+						}
+					})
+					.setCancelable(true)
+					.create().show();
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -142,7 +152,7 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
 								// Μετατροπή της εισόδου σε αριθμό στο [0, 80]
 								Double num = Double.valueOf(txtNum.getText().toString());
 								if (num > 80) {    // Η είσοδος δεν είναι έγκυρος αριθμός
-									parentView.setSelection(DEFAULT_FPA);    // Κανονικά πρέπει να πάει στην προηγούμενη τιμή.
+									parentView.setSelection(0);
 									Toast.makeText(ths, R.string.invalidValue, Toast.LENGTH_SHORT).show();
 								}
 								// Αν ο αριθμός ήδη υπάρχει στη λίστα...
@@ -162,11 +172,10 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
 						}
 					})
 					.setNegativeButton(R.string.Cancel, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int whichButton) {
-                            parentView.setSelection(DEFAULT_FPA);    // Κανονικά πρέπει να πάει στην προηγούμενη τιμή.
-                            setFEInfo(parentView);
-                        }
-                    })
+						public void onClick(DialogInterface dialog, int whichButton) {
+							parentView.setSelection(0); setFEInfo(parentView);
+						}
+					})
 					.show();
 		} else setFEInfo(parentView);
 	}
@@ -180,6 +189,12 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
 			((TextView) findViewById(R.id.tvFEInfo)).setText(txt);
 		}
 		calculation();
+	}
+
+	Hold getHold(double val) {
+		for (Hold item : holdList)
+			if (Math.abs(item.total() - val) < 1e-8) return item;
+		return null;
 	}
 
     // Εύρεση καθαρής αξίας
@@ -219,16 +234,16 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
 			int amountType = ((Spinner) findViewById(R.id.spAmountType)).getSelectedItemPosition();
             int invoiceType = ((Spinner) findViewById(R.id.spInvoiceType)).getSelectedItemPosition();
             boolean auto = ((CompoundButton) findViewById(R.id.swAuto)).isChecked();
-            boolean self = ((CompoundButton) findViewById(R.id.cbSelf)).isChecked();
 			boolean construction = ((CompoundButton) findViewById(R.id.cbConstruction)).isChecked();
             double amount = Double.parseDouble(((EditText) (findViewById(R.id.txtAmount))).getText().toString());
 			double fpaPercent = Double.parseDouble(((Spinner) findViewById(R.id.spFPA)).getSelectedItem().toString()) / 100.0;
-			double fePercent = Double.parseDouble(((Spinner) findViewById(R.id.spFE)).getSelectedItem().toString()) / 100.0;
-			double holdsPercent = Double.parseDouble(((Spinner) findViewById(R.id.spHolds)).getSelectedItem().toString()) / 100.0;
+			double fePercent, holdsPercent;
+			Hold hold = null;
             // Αυτόματη εύρεση κρατήσεων - ΦΕ
             // Το πρόβλημα εδώ είναι ότι δεν ξέρουμε την καθαρή αξία!
             // Για το λόγο αυτό κάποιοι έλεγχοι θα γίνουν μεταγενέστερα.
             if (auto) {
+				boolean self = ((CompoundButton) findViewById(R.id.cbSelf)).isChecked();
 				// Σε κατασκευαστικές δαπάνες, προμηθευτής είναι πάντα ιδιώτης
 				if (contractor != 0) construction = false;	 // Όχι ιδιώτης
                 // Υπολογισμός του ΦΕ
@@ -236,21 +251,27 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
                 // Μεταγενέστερα: if (net <= 150) fePercent = 0;
                 else if (invoiceType == 2) fePercent = 0.01; // Προμήθεια υγρών καυσίμων
                 else if (invoiceType == 1) /* Παροχή υπηρεσιών */ fePercent = construction /* Κατασκευή έργου */ ? 0.03 : 0.08;
-                else if (invoiceType == 0) fePercent = 0.04; // Προμήθεια υλικών
+                else /*if (invoiceType == 0)*/ fePercent = 0.04; // Προμήθεια υλικών
                 // Υπολογισμός κρατήσεων
-                if (contractor == 2) /* Στρατός */ holdsPercent = self /* Ιδιοι πόροι */ ? 0.1 : 0.04;
+                if (contractor == 2) /* Στρατός */ hold = getHold(holdsPercent = self /* Ιδιοι πόροι */ ? 0.14 : 0.04);
                 else if (contractor == 0 /* Ιδιώτης */ && invoiceType == 1 /* Παροχή υπηρεσιών */ && construction /* Κατασκευή έργου */) {
-                    holdsPercent = self /* Ιδιοι πόροι */ ? 0.1512 : 0.0512;
+                    hold = getHold(holdsPercent = self /* Ιδιοι πόροι */ ? 0.1512 : 0.0512);
                     if (calculateNet(contractor, amountType, amount, fpaPercent, holdsPercent, fePercent) > 2500)
-                        holdsPercent = self /* Ιδιοι πόροι */ ? 0.152236 : 0.052236;
+                        hold = getHold(holdsPercent = self /* Ιδιοι πόροι */ ? 0.152236 : 0.052236);
                 } else {
-                    holdsPercent = self /* Ιδιοι πόροι */ ? 0.14096 : 0.04096;
+                    hold = getHold(holdsPercent = self /* Ιδιοι πόροι */ ? 0.14096 : 0.04096);
                     if (calculateNet(contractor, amountType, amount, fpaPercent, holdsPercent, fePercent) > 2500)
-                        holdsPercent = self /* Ιδιοι πόροι */ ? 0.141996 : 0.041996;
+                        hold = getHold(holdsPercent = self /* Ιδιοι πόροι */ ? 0.141996 : 0.041996);
                 }
                 // Μεταγενέστερος έλεγχος: if (net <= 150) fePercent = 0;
                 if (calculateNet(contractor, amountType, amount, fpaPercent, holdsPercent, 0) <= 150) fePercent = 0;
-            }
+            } else {
+				// Εύρεση κρατήσεων και ΦΕ
+				Object o = ((Spinner) findViewById(R.id.spHolds)).getSelectedItem();
+				if (o instanceof Hold) { hold = (Hold) o; holdsPercent = hold.total(); }
+				else holdsPercent = Double.parseDouble(o.toString()) / 100.0;
+				fePercent = Double.parseDouble(((Spinner) findViewById(R.id.spFE)).getSelectedItem().toString()) / 100.0;
+			}
 			// Εύρεση καθαρής αξίας
             amount = calculateNet(contractor, amountType, amount, fpaPercent, holdsPercent, fePercent);
 			// Υπολογισμοί ενδιάμεσων τιμών
@@ -284,16 +305,93 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
             if (contractor != 2 /* όχι Στρατός */ && (amount > 2500 || construction && auto)) txt += getString(R.string.reqContract) + "\n";
             if (amount > 60000) txt += getString(R.string.reqCompetitionFormal) + "\n";
             else if (amount > 15000 || construction && auto) txt += getString(R.string.reqCompetitionInformal) + "\n";
-			if (construction && invoiceType == 1 /* Παροχή υπηρεσιών */)
+			if (auto && construction && invoiceType == 1 /* Παροχή υπηρεσιών */)
 				txt += String.format(getString(R.string.reqConstructionContractor),
 						df2.format(amount * 0.005), df2.format(amount * 0.002), df2.format(amount * 0.006));
-            if (txt.equals("")) txt = "‒";
-            TextView tvRequirements = (TextView) findViewById(R.id.tvRequirements);
-            tvRequirements.setText(txt);
+			if (txt.equals("")) txt = getString(R.string.reqEmpty);
+			((TextView) findViewById(R.id.tvRequirements)).setText(txt);
+			// Ανάλυση κρατήσεων
+			if (hold != null) {
+				double[] holdsAll = hold.euro(holds);
+				String[] txtHoldsAll = getResources().getStringArray(R.array.hldParts);
+				String str = getString(R.string.hldPart);
+				txt = String.format(str, getString(R.string.hldTotal), df.format(holdsPercent), df2.format(holds));
+				for (int z = 0; z < holdsAll.length; ++z)
+					if (z >= hold.data.length) break;
+					else if (hold.data[z] != 0)
+						txt += String.format(str, txtHoldsAll[z], df.format(hold.data[z]), df2.format(holdsAll[z]));
+			} else txt = getString(R.string.hldFail);
+			((TextView) findViewById(R.id.tvHoldAnalysis)).setText(txt);
 			// Εμφάνιση των widgets που είναι κρυφά όσο δεν υπάρχει αποτέλεσμα
             findViewById(R.id.layOut).setVisibility(View.VISIBLE);
 		} catch (NumberFormatException e) {
 			findViewById(R.id.layOut).setVisibility(View.GONE);
 		}
+	}
+
+	//                             ΜΤΣ,   Χαρτόσημο, ΟΓΑ,    ΕΑΑΔΗΣΥ, ΒΑΜ, ΕΚΟΕΜΣ, ΑΟΟΑ, ΤΑΥΥΕ, ΓΓΚΠ
+	final private Hold[] holdList = {
+			new Hold(new double[] {0.04,    0.0008,  0.00016}),
+			new Hold(new double[] {0.04,    0.00083, 0.000166, 0.001}),
+			new Hold(new double[] {0.03904, 0.0008,  0.00016}),
+			new Hold(new double[] {0.04,    0.00091, 0.000182, 0.001, 0,    0,    0,   0.003, 0.001}),
+			new Hold(new double[] {0.04,    0.001,   0.0002,   0,     0,    0,    0.01}),
+			new Hold(new double[] {0.04,    0.00103, 0.000206, 0.001, 0,    0,    0.01}),
+			new Hold(new double[] {0,       0,       0,        0,     0.02, 0.08}),
+			new Hold(new double[] {0.03904, 0.0008,  0.00016,  0,     0.02, 0.08}),
+			new Hold(new double[] {0.04,    0.0008,  0.00016,  0,     0.02, 0.08}),
+			new Hold(new double[] {0.04,    0.00083, 0.000166, 0.001, 0.02, 0.08}),
+			new Hold(new double[] {0.04,    0.001,   0.0002,   0,     0.02, 0.08, 0.01}),
+			new Hold(new double[] {0.04,    0.00103, 0.000206, 0.001, 0.02, 0.08, 0.01})
+	};
+
+	public class Hold {
+		public Hold(double[] holds) { data = holds; }
+		public double total() { return sum(data); }
+		@Override public String toString() { return Double.toString(Math.round(total() * 10000000.0)/ 100000.0).replaceAll("\\.0$", ""); }
+		public double[] euro(double holds) {
+			double euroTotal = 0, euroData[] = new double[data.length];
+			double total = total();
+			class Pair {
+				Pair(double remainder, int id) { this.remainder = remainder; this.id = id; }
+				double remainder;
+				int id;
+			}
+			ArrayList<Pair> remainders = new ArrayList<>();
+			for (int z = 0; z < data.length; ++z) {
+				double t = holds * data[z] / total;
+				remainders.add(new Pair(Math.round(t) - t, z));
+				euroTotal += euroData[z] = Math.round(t * 100.0) / 100.0;
+			}
+
+			// Σφάλματα στρογγυλοποίησης
+			int remainder = (int) Math.round((euroTotal - holds) * 100.0);
+			if (remainder != 0) {
+				Collections.sort(remainders, new Comparator<Pair>() {
+					@Override public int compare(Pair a, Pair b) {
+						if (a.remainder < b.remainder) return -1;
+						if (a.remainder > b.remainder) return 1;
+						return 0;
+					}
+				});
+				if (remainder > 0)
+					for (int z = 0; z < remainder; ++z) {
+						Pair p = remainders.get(remainders.size() - 1 - z);
+						euroData[p.id] -= 0.01;
+					}
+				else
+					for (int z = 0; z < -remainder; ++z) {
+						Pair p = remainders.get(z);
+						euroData[p.id] += 0.01;
+					}
+			}
+			return euroData;
+		}
+		private double sum(double[] array) {
+			double sum = 0;
+			for (double item : array) sum += item;
+			return sum;
+		}
+		final private double[] data;
 	}
 }
