@@ -3,6 +3,7 @@ package chameleon.army.Invoice;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.InputType;
@@ -48,9 +49,9 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
                     tv.setText(s);
                     tv.setVisibility(View.VISIBLE);
                 }
-                View fpa = findViewById(R.id.layFPA), fe = findViewById(R.id.layFE);
-                fe.setVisibility(position > 1 ? View.GONE : View.VISIBLE);
-                fpa.setVisibility(position == 3 ? View.GONE : View.VISIBLE);
+                findViewById(R.id.layFE).setVisibility(position != 0 /* Όχι ιδιώτης */ ? View.GONE : View.VISIBLE);
+                findViewById(R.id.layFPA).setVisibility(position == 2 /* Στρατός */ ? View.GONE : View.VISIBLE);
+                findViewById(R.id.cbConstruction).setVisibility(position != 0 /* Όχι ιδιώτης */ ? View.GONE : View.VISIBLE);
                 calculation();
             }
             @Override  public void onNothingSelected(AdapterView<?> parentView) {}
@@ -112,8 +113,8 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 		if (id == R.id.action_about) {
-            AlertDialog.Builder dlgAlert  = new AlertDialog.Builder(this);
-            dlgAlert.setMessage(R.string.aboutInfo);
+            AlertDialog.Builder dlgAlert = new AlertDialog.Builder(this);
+            dlgAlert.setMessage(String.format(getString(R.string.aboutInfo), BuildConfig.VERSION_NAME));
             dlgAlert.setTitle(R.string.about);
             dlgAlert.setPositiveButton(R.string.OK, null);
             dlgAlert.setCancelable(true);
@@ -185,7 +186,6 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
     double calculateNet(int contractor, int amountType, double amount, double fpa, double holds, double fe) {
         switch(contractor) {
             case 0:	// Ιδιώτης
-            case 1:	// Ιδιώτης που δε θέλει να πληρώσει κρατήσεις (παράνομο)
                 switch(amountType) {
                     case 1: amount /= 1.0 + fpa; break;	// Καταλογιστέο
                     case 2: amount /= 1.0 + fpa - holds; break; // Πληρωτέο
@@ -195,19 +195,16 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
                         amount /= 1.0 + fpa - holds - fe * feFactor;
                         // default: Καθαρή αξία
                 }
-                if (contractor == 1)	// Ιδιώτης που δε θέλει να πληρώσει κρατήσεις (παράνομο)
-                    amount /= 1.0 - holds / (1.0 + fpa);	// Καθαρή αξία
                 break;
-            case 2:	// Δημόσιο
+            case 1:	// Δημόσιο
                 switch(amountType) {
                     case 1: amount /= 1.0 + fpa + holds; break;	// Καταλογιστέο
                     case 2: case 3: amount /= 1.0 + fpa; // Πληρωτέο ή Υπόλοιπο πληρωτέο
                         // default: Καθαρή αξία
                 }
                 break;
-            case 3:	// Στρατός
-                // Καταλογιστέο
-                if (amountType == 1) amount /= 1.0 + holds;
+            default:    //case 2:	// Στρατός
+                if (amountType == 1) amount /= 1.0 + holds;	// Καταλογιστέο
                 // else: Καθαρή αξία ή Πληρωτέο ή Υπόλοιπο πληρωτέο
         }
         // Στρογγυλοποίηση
@@ -223,7 +220,7 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
             int invoiceType = ((Spinner) findViewById(R.id.spInvoiceType)).getSelectedItemPosition();
             boolean auto = ((CompoundButton) findViewById(R.id.swAuto)).isChecked();
             boolean self = ((CompoundButton) findViewById(R.id.cbSelf)).isChecked();
-            boolean construction = ((CompoundButton) findViewById(R.id.cbConstruction)).isChecked();
+			boolean construction = ((CompoundButton) findViewById(R.id.cbConstruction)).isChecked();
             double amount = Double.parseDouble(((EditText) (findViewById(R.id.txtAmount))).getText().toString());
 			double fpaPercent = Double.parseDouble(((Spinner) findViewById(R.id.spFPA)).getSelectedItem().toString()) / 100.0;
 			double fePercent = Double.parseDouble(((Spinner) findViewById(R.id.spFE)).getSelectedItem().toString()) / 100.0;
@@ -232,15 +229,17 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
             // Το πρόβλημα εδώ είναι ότι δεν ξέρουμε την καθαρή αξία!
             // Για το λόγο αυτό κάποιοι έλεγχοι θα γίνουν μεταγενέστερα.
             if (auto) {
+				// Σε κατασκευαστικές δαπάνες, προμηθευτής είναι πάντα ιδιώτης
+				if (contractor != 0) construction = false;	 // Όχι ιδιώτης
                 // Υπολογισμός του ΦΕ
-                if (contractor > 1) fePercent = 0; // Δημόσιο, Στρατός
+                if (contractor != 0) fePercent = 0;	 // Όχι ιδιώτης
                 // Μεταγενέστερα: if (net <= 150) fePercent = 0;
                 else if (invoiceType == 2) fePercent = 0.01; // Προμήθεια υγρών καυσίμων
                 else if (invoiceType == 1) /* Παροχή υπηρεσιών */ fePercent = construction /* Κατασκευή έργου */ ? 0.03 : 0.08;
                 else if (invoiceType == 0) fePercent = 0.04; // Προμήθεια υλικών
                 // Υπολογισμός κρατήσεων
-                if (contractor == 3) /* Στρατός */ holdsPercent = self /* Ιδιοι πόροι */ ? 0.1 : 0.04;
-                else if (contractor < 2 /* Ιδιώτης */ && invoiceType == 1 /* Παροχή υπηρεσιών */ && construction /* Κατασκευή έργου */) {
+                if (contractor == 2) /* Στρατός */ holdsPercent = self /* Ιδιοι πόροι */ ? 0.1 : 0.04;
+                else if (contractor == 0 /* Ιδιώτης */ && invoiceType == 1 /* Παροχή υπηρεσιών */ && construction /* Κατασκευή έργου */) {
                     holdsPercent = self /* Ιδιοι πόροι */ ? 0.1512 : 0.0512;
                     if (calculateNet(contractor, amountType, amount, fpaPercent, holdsPercent, fePercent) > 2500)
                         holdsPercent = self /* Ιδιοι πόροι */ ? 0.152236 : 0.052236;
@@ -258,39 +257,38 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
 			double fpa = Math.round(amount * fpaPercent * 100.0) / 100.0;
 			double holds = Math.round(amount * holdsPercent * 100.0) / 100.0;
 			double mixed = amount;
-			if (contractor != 3) mixed += fpa;	// όχι Στρατός
-			if (contractor > 1) mixed += holds;	// Δημόσιο, Στρατός
-			mixed = Math.round(mixed * 100.0) / 100.0;	// fix truncation errors
-			double final1 = Math.round((mixed - holds) * 100.0) / 100.0;	// fix truncation errors
+			if (contractor != 2) mixed += fpa;	// όχι Στρατός
+			if (contractor != 0) mixed += holds;	// Δημόσιο, Στρατός
+			//mixed = Math.round(mixed * 100.0) / 100.0;	// fix truncation errors
+			double final1 = mixed - holds;//Math.round((mixed - holds) * 100.0) / 100.0;	// fix truncation errors
 			double fe = amount - (fePercent == 0.03 ? 0 : holds);
 			fe = Math.round(fe * fePercent * 100.0) / 100.0;
-			double final2 = Math.round((final1 - fe) * 100.0) / 100.0;	// fix truncation errors
+			double final2 = final1 - fe;//Math.round((final1 - fe) * 100.0) / 100.0;	// fix truncation errors
 			// Εξαγωγή αποτελεσμάτων
 			DecimalFormat df = new DecimalFormat("0.####%");	// ποσοστά
 			DecimalFormat df2 = new DecimalFormat("0.00¤");	// νομισματικά
-			String txtHolds = getResources().getString(R.string.resHolds) + " " + df.format(holdsPercent) + ":\t" + df2.format(holds) + "\n";
-			String txt = getResources().getString(R.string.resNet) + ":\t" + df2.format(amount) + "\n";
-			if (contractor > 1 /* Δημόσιο, Στρατός */) txt += "+ " + txtHolds;
-			if (contractor != 3 /* όχι Στρατός */) txt += getResources().getString(R.string.resVAT) + " " + df.format(fpaPercent) + ":\t" + df2.format(fpa) + "\n";
-			txt += getResources().getString(R.string.resMixed) + ":\t" + df2.format(mixed) + "\n" +
-					"‒ " + txtHolds +
-					getResources().getString(R.string.resFinal) + ":\t" + df2.format(final1);
-			if (contractor < 2 /* Ιδιώτης */ && fePercent > 0)
-				txt += "\n" + getResources().getString(R.string.resFE) + " " + df.format(fePercent) + ":\t" + df2.format(fe) + "\n" +
-					getResources().getString(R.string.resFinal2) + ":\t" + df2.format(final2);
-            TextView tvResults = (TextView) findViewById(R.id.tvResults);
-			tvResults.setText(txt);
+			String txt = String.format(getString(R.string.resNet), df2.format(amount));
+			String txtHolds = String.format(getString(R.string.resHolds), df.format(holdsPercent), df2.format(holds));
+			if (contractor != 0 /* Δημόσιο, Στρατός */) txt += "+ " + txtHolds;
+			if (contractor != 2 /* όχι Στρατός */) txt += String.format(getString(R.string.resVAT), df.format(fpaPercent), df2.format(fpa));
+			txt += String.format(getString(R.string.resMixed), df2.format(mixed), txtHolds, df2.format(final1));
+			if (contractor == 0 /* Ιδιώτης */ && fePercent > 0)
+				txt += String.format(getString(R.string.resFE), df.format(fePercent), df2.format(fe), df2.format(final2));
+			((TextView) findViewById(R.id.tvResults)).setText(txt);
 			// Εξαγωγή απαιτούμενων
 			txt = "";
-            if (contractor < 2) { // Ιδιώτης
-                if (mixed > 1500) txt += getResources().getString(R.string.reqTaxCurrency) + "\n";
-                if (mixed > 3000) txt += getResources().getString(R.string.reqInsuranceCurrency) + "\n";
+            if (contractor == 0) { // Ιδιώτης
+                if (mixed > 1500) txt += getString(R.string.reqTaxCurrency) + "\n";
+                if (mixed > 3000) txt += getString(R.string.reqInsuranceCurrency) + "\n";
             }
-            if (contractor != 3 /* όχι Στρατός */ && (amount > 2500 || construction && auto)) txt += getResources().getString(R.string.reqContract) + "\n";
-            if (amount > 60000) txt += getResources().getString(R.string.reqCompetitionFormal) + "\n";
-            else if (amount > 15000 || construction && auto) txt += getResources().getString(R.string.reqCompetitionInformal) + "\n";
-            TextView tvRequirements = (TextView) findViewById(R.id.tvRequirements);
+            if (contractor != 2 /* όχι Στρατός */ && (amount > 2500 || construction && auto)) txt += getString(R.string.reqContract) + "\n";
+            if (amount > 60000) txt += getString(R.string.reqCompetitionFormal) + "\n";
+            else if (amount > 15000 || construction && auto) txt += getString(R.string.reqCompetitionInformal) + "\n";
+			if (construction && invoiceType == 1 /* Παροχή υπηρεσιών */)
+				txt += String.format(getString(R.string.reqConstructionContractor),
+						df2.format(amount * 0.005), df2.format(amount * 0.002), df2.format(amount * 0.006));
             if (txt.equals("")) txt = "‒";
+            TextView tvRequirements = (TextView) findViewById(R.id.tvRequirements);
             tvRequirements.setText(txt);
 			// Εμφάνιση των widgets που είναι κρυφά όσο δεν υπάρχει αποτέλεσμα
             findViewById(R.id.layOut).setVisibility(View.VISIBLE);

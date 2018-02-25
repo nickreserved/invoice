@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Τιμολόγιο Δαπάνης Στρατού</string>
     <string name="about">Σχετικά</string>
-    <string name="aboutInfo">Υπολογισμός στοιχείων τιμολογίου για δαπάνη Στρατού Ξηράς\n\nΠρογραμματισμός: Παύλος Γκέσος\nΈκδοση: 10 Οκτ 2015\n\nΑποτελεί την πρώτη μου εφαρμογή σε Android!</string>
+    <string name="aboutInfo">Υπολογισμός στοιχείων τιμολογίου για δαπάνη Στρατού Ξηράς\n\nΠαύλος Γκέσος (ΣΣΕ 2002)\nΈκδοση %1$s\nhttp://ha-invoice.sourceforge.net/</string>
     <string name="OK">Εντάξει</string>
     <string name="Cancel">Ακύρωση</string>
     <string name="contractor">Προμηθευτής</string>
@@ -22,29 +22,26 @@
     <string name="invalidValue">Η τιμή δεν είναι έγκυρη</string>
 
     <string name="requirements">Απαιτήσεις</string>
-    <string name="reqContract">Σύναψη σύμβασης με τον προμηθευτή</string>
-    <string name="reqCompetitionInformal">Πρόχειρος διαγωνισμός</string>
-    <string name="reqCompetitionFormal">Δημόσιος διαγωνισμός</string>
-    <string name="reqTaxCurrency">Φορολογική ενημερότητα, για «πληρωμή από το Δημόσιο»</string>
-    <string name="reqInsuranceCurrency">Ασφαλιστική ενημερότητα</string>
+    <string name="reqContract">‒ Σύναψη σύμβασης με τον προμηθευτή</string>
+    <string name="reqCompetitionInformal">‒ Πρόχειρος διαγωνισμός</string>
+    <string name="reqCompetitionFormal">‒ Δημόσιος διαγωνισμός</string>
+    <string name="reqTaxCurrency">‒ Φορολογική ενημερότητα, για «πληρωμή από το Δημόσιο»</string>
+    <string name="reqInsuranceCurrency">‒ Ασφαλιστική ενημερότητα</string>
+	<string name="reqConstructionContractor">‒ Ο εργολάβος πρέπει να μας υποβάλει αποδεικτικά κατάθεσης για: (%% της καθαρής αξίας)\n\t\t• 0.5%% ΕΜΠ (%1$s)\n\t\t• 0.5%% ΤΣΜΕΔΕ (%1$s)\n\t\t• 0.5%% ΤΠΕΔΕ (%1$s)\n‒ Εργολάβος ασφαλισμένος στο ΤΣΜΕΔΕ πρέπει να μας υποβάλλει αποδεικτικά κατάθεσης για ΤΣΜΕΔΕ:\n\t\t• Προσωπική Εισφορά:\n\t\t\t\t▫ Για Γενική Εργολαβία: 2%% του 10%% (%2$s)\n\t\t\t\t▫ Για Τμηματικές Εργολαβίες: 2%% του 25%% (%1$s)\n\t\t• Υπέρ Τρίτων (Ν2166/93): 0.6%% (%3$s)</string>
 
-    <string name="resNet">Καθαρή αξία</string>
-    <string name="resVAT">+ ΦΠΑ</string>
-    <string name="resMixed">Καταλογιστέο</string>
-    <string name="resHolds">Κρατήσεις</string>
-    <string name="resFinal">Πληρωτέο</string>
-    <string name="resFE">‒ ΦΕ</string>
-    <string name="resFinal2">Υπόλοιπο πληρωτέο</string>
+    <string name="resNet">Καθαρή αξία:\t%1$s\n</string>
+    <string name="resVAT">+ ΦΠΑ %1$s:\t\t%2$s\n</string>
+    <string name="resMixed">Καταλογιστέο:\t%1$s\n‒ %2$sΠληρωτέο:\t%3$s</string>
+    <string name="resHolds">Κρατήσεις %1$s:\t\t%2$s\n</string>
+    <string name="resFE">\n‒ ΦΕ %1$s:\t\t%2$s\nΥπόλοιπο πληρωτέο:\t%3$s</string>
 
     <string-array name="contractors">
         <item>Ιδιώτης</item>
-        <item>Ιδιώτης (όχι κρατήσεις)</item>
         <item>Δημόσιο</item>
         <item>Στρατός</item>
     </string-array>
     <string-array name="contractorInfo">
         <item />
-        <item>Ο ιδιώτης θέλει να προσαυξήσει την καθαρή αξία για να μη χρεωθεί τις κρατήσεις (παράνομο).</item>
         <item>ΔΕΗ, ΟΣΕ, κ.τ.λ.</item>
         <item>Στρατιωτικά πρατήρια</item>
     </string-array>

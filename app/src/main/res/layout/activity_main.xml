@@ -81,6 +81,7 @@
             android:layout_height="wrap_content"
             android:text="@string/automatic"
             android:id="@+id/swAuto"
+            android:checked="true"
             android:layout_below="@+id/layFPA"
             android:layout_marginTop="@dimen/module_vertical_margin" />
 
@@ -89,8 +90,7 @@
             android:layout_height="wrap_content"
             android:id="@+id/layAutomatic"
             android:layout_marginTop="@dimen/module_vertical_margin"
-            android:layout_below="@+id/swAuto"
-            android:visibility="gone">
+            android:layout_below="@+id/swAuto">
 
             <CheckBox
                 android:layout_width="wrap_content"
@@ -138,6 +138,7 @@
             android:layout_height="wrap_content"
             android:id="@+id/layAdvanced"
             android:layout_marginTop="@dimen/module_vertical_margin"
+            android:visibility="gone"
             android:layout_below="@id/layAutomatic">
 
             <TextView
