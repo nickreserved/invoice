@@ -47,7 +47,7 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
 
 		setSpinner(R.id.spFPA, R.array.FPA, pref.getInt(FPA, 24));
 		setSpinner(R.id.spFE, R.array.FE, pref.getInt(FE, 4));
-		setSpinner(R.id.spHolds, holdList, pref.getInt(HOLDS, 409600) / 100000.0);	// 4.09600
+		setSpinner(R.id.spHolds, holdList, pref.getInt(HOLDS, 415816) / 100000.0);	// 4.15816
 		((ArrayAdapter) ((Spinner) findViewById(R.id.spHolds)).getAdapter()).add(getString(R.string.hldOther));
 
 		Spinner spinner = (Spinner) findViewById(R.id.spContractorType);
@@ -316,9 +316,9 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
                 // Υπολογισμός κρατήσεων
                 if (contractor != 0) /* Όχι ιδιώτης */ hold = getHold(holdsPercent = self /* Ιδιοι πόροι */ ? 0.14 : 0.04);
                 else {
-                    hold = getHold(holdsPercent = self /* Ιδιοι πόροι */ ? 0.14096 : 0.04096);
+                    hold = getHold(holdsPercent = self /* Ιδιοι πόροι */ ? 0.1415816 : 0.0415816);
                     if (calculateNet(contractor, amountType, amount, fpaPercent, holdsPercent, fePercent) > 2500)
-                        hold = getHold(holdsPercent = self /* Ιδιοι πόροι */ ? 0.1415816 : 0.0415816);
+                        hold = getHold(holdsPercent = self /* Ιδιοι πόροι */ ? 0.1422032 : 0.0422032);
                 }
                 // Μεταγενέστερος έλεγχος: if (net <= 150) fePercent = 0;
                 if (calculateNet(contractor, amountType, amount, fpaPercent, holdsPercent, 0) <= 150) fePercent = 0;
@@ -386,16 +386,16 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
 		}
 	}
 
-	//                             ΜΤΣ,    Χαρτόσημο, ΟΓΑ,       ΕΑΑΔΗΣΥ, ΒΑΜ, ΕΚΟΕΜΣ
+	//                             ΜΤΣ,    Χαρτόσημο, ΟΓΑ,       ΕΑΑΔΗΣΥ, ΑΕΠΠ,  ΒΑΜ, ΕΚΟΕΜΣ
 	final private Hold[] holdList = {
-			new Hold(new double[] {0.04,    0.0008,   0.00016}),						// 4.096
-			new Hold(new double[] {0.04,    0.000818, 0.0001636, 0.0006}),				// 4.15816
-			new Hold(new double[] {0.03904, 0.0008,   0.00016}),						// 4
-			new Hold(new double[] {0,       0.000018, 0.0000036, 0.0006}),				// 0.06216
-			new Hold(new double[] {0,       0,        0,         0,      0.02, 0.08}),	// 10
-			new Hold(new double[] {0.03904, 0.0008,   0.00016,   0,      0.02, 0.08}),	// 14
-			new Hold(new double[] {0.04,    0.0008,   0.00016,   0,      0.02, 0.08}),	// 14.096
-			new Hold(new double[] {0.04,    0.000818, 0.0001636, 0.0006, 0.02, 0.08}),	// 14.15816
+			new Hold(new double[] {0.04,    0.000818, 0.0001636, 0,      0.0006}),				// 4.15816
+			new Hold(new double[] {0.04,    0.000836, 0.0001672, 0.0006, 0.0006}), 				// 4.22032
+			new Hold(new double[] {0.03904, 0.0008,   0.00016}),								// 4
+			new Hold(new double[] {0,       0.000036, 0.0000072, 0.0006, 0.0006}),				// 0.12392
+			new Hold(new double[] {0,       0,        0,         0,      0,      0.02, 0.08}),	// 10
+			new Hold(new double[] {0.03904, 0.0008,   0.00016,   0,      0,      0.02, 0.08}),	// 14
+			new Hold(new double[] {0.04,    0.000818, 0.0001636, 0,      0.0006, 0.02, 0.08}),	// 14.15816
+			new Hold(new double[] {0.04,    0.000836, 0.0001672, 0.0006, 0.0006, 0.02, 0.08}),	// 14.22032
 	};
 
 	private class Hold {

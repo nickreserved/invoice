@@ -8,7 +8,7 @@
     <string name="FPA">ΦΠΑ (%)</string>
     <string name="FPAInfo">Όλα τα είδη του τιμολογίου πρέπει να έχουν το ίδιο ΦΠΑ. Το αντίθετο δεν υποστηρίζεται.</string>
     <string name="automatic">Κρατήσεις &amp; ΦΕ, αυτόματα</string>
-    <string name="tvAutoOn">Με την Φ.830/60/918814/Σ.5965/02 Σεπ 16/ΓΕΣ/ΔΟΙ/3α</string>
+    <string name="tvAutoOn">Με την Φ.830/60/918814/Σ.5965/02 Σεπ 16/ΓΕΣ/ΔΟΙ/3α και την ΚΥΑ 1191/14 Μαρ 17 (ΦΕΚ Β\' 969)</string>
 	<string name="tvAutoOff">Μόνο για έμπειρους χρήστες με ευχέρεια στις δαπάνες</string>
     <string name="Holds">Κρατήσεις (%)</string>
     <string name="FE">ΦΕ (%)</string>
@@ -49,6 +49,7 @@
 		<item>Χαρτόσημο</item>
 		<item>ΟΓΑ</item>
 		<item>ΕΑΑΔΗΣΥ</item>
+		<item>ΑΕΠΠ</item>
 		<item>ΒΑΜ</item>
 		<item>ΕΚΟΕΜΣ</item>
 		<item>ΑΟΟΑ</item>
