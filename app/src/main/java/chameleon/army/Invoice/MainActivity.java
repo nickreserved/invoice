@@ -407,17 +407,14 @@ public class MainActivity extends Activity {
 			txt = new StringBuilder(4096);
 			if (contractor == 0) { // Ιδιώτης
 				if (mixed > 1500) txt.append(getString(R.string.reqTaxCurrency)).append("\n");
-				//if (mixed > 3000) txt += getString(R.string.reqInsuranceCurrency) + "\n";
-				if (amount > 2500) {
-					txt.append(getString(R.string.reqInsuranceCurrency)).append("\n");
-					txt.append(getString(R.string.reqCriminalRecord)).append("\n");
-				}
+				if (mixed > 3000) txt.append(getString(R.string.reqInsuranceCurrency)).append("\n");
+				//if (amount > 2500) txt.append(getString(R.string.reqInsuranceCurrency)).append("\n");
+				if (amount > 2500) txt.append(getString(R.string.reqCriminalRecord)).append("\n");
 			}
 			if (contractor != 2 /* όχι Στρατός */ && (amount > 2500 || construction && auto))
 				txt.append(getString(R.string.reqContract)).append("\n");
 			if (amount > 60000) txt.append(getString(R.string.reqCompetitionFormal)).append("\n");
-			else if (amount > 20000 || construction && auto)
-				txt.append(getString(R.string.reqCompetitionInformal)).append("\n");
+			else if (amount > 20000) txt.append(getString(R.string.reqCompetitionInformal)).append("\n");
 			if (amount > 20000) txt.append(getString(R.string.reqCriminalRecordDenial)).append("\n");
 			if (auto && construction && invoiceType == 1 /* Παροχή υπηρεσιών */)
 				txt.append(String.format(getString(R.string.reqConstructionContractor),
@@ -457,15 +454,15 @@ public class MainActivity extends Activity {
 	/*3*/	new Hold(new double[] {0.04,    0.000818, 0.0001636, 0,      0.0006}), 				// 4.15816
 	/*4*/	new Hold(new double[] {0.04,    0.002818, 0.0001636, 0,      0.0006}), 				// 4.35816 - Αμοιβές μελετητών
 			// Καθαρή αξία >= 2500
-	/*5*/	new Hold(new double[] {0.04,    0.000836, 0.0001672, 0.0006, 0.0006}), 				// 4.22032
-	/*6*/	new Hold(new double[] {0.04,    0.002836, 0.0001672, 0.0006, 0.0006}), 				// 4.42032 - Αμοιβές μελετητών
+	/*5*/	new Hold(new double[] {0.04,    0.000839, 0.0001678, 0.0007, 0.0006}), 				// 4.23068
+	/*6*/	new Hold(new double[] {0.04,    0.002839, 0.0001678, 0.0007, 0.0006}), 				// 4.43068 - Αμοιβές μελετητών
 			// Π/Υ ΠΔΕ
 			// Καθαρή αξία < 2500
 	/*7*/	new Hold(new double[] {0,       0.000018, 0.0000036, 0,      0.0006}),				// 0.06216
 	/*8*/	new Hold(new double[] {0,       0.002018, 0.0000036, 0,      0.0006}),				// 0.26216 - Αμοιβές μελετητών
 			// Καθαρή αξία >= 2500
-	/*9*/	new Hold(new double[] {0,       0.000036, 0.0000072, 0.0006, 0.0006}),				// 0.12432
-	/*10*/	new Hold(new double[] {0,       0.002036, 0.0000072, 0.0006, 0.0006}),				// 0.32432 - Αμοιβές μελετητών
+	/*9*/	new Hold(new double[] {0,       0.000039, 0.0000078, 0.0007, 0.0006}),				// 0.13468
+	/*10*/	new Hold(new double[] {0,       0.002039, 0.0000078, 0.0007, 0.0006}),				// 0.33468 - Αμοιβές μελετητών
 			// ΙΔΙΟΙ ΠΟΡΟΙ
 	/*11*/	new Hold(new double[] {0,       0,        0,         0,      0,      0.02, 0.08}),	// 10 - Λέσχες
 	/*12*/	new Hold(new double[] {0.03904, 0.0008,   0.00016,   0,      0,      0.02, 0.08}),	// 14 - Προμήθεια από Πρατήριο ή ΝΠΔΔ
@@ -474,8 +471,8 @@ public class MainActivity extends Activity {
 	/*14*/	new Hold(new double[] {0.04,    0.000818, 0.0001636, 0,      0.0006, 0.02, 0.08}),	// 14.15816
 	/*15*/	new Hold(new double[] {0.04,    0.002818, 0.0001636, 0,      0.0006, 0.02, 0.08}),	// 14.35816 - Αμοιβές μελετητών
 			// Καθαρή αξία >= 2500
-	/*16*/	new Hold(new double[] {0.04,	0.000836, 0.0001672, 0.0006, 0.0006, 0.02, 0.08}),	// 14.22032
-	/*17*/	new Hold(new double[] {0.04,    0.002836, 0.0001672, 0.0006, 0.0006, 0.02, 0.08}),	// 14.42032 - Αμοιβές μελετητών
+	/*16*/	new Hold(new double[] {0.04,	0.000839, 0.0001678, 0.0007, 0.0006, 0.02, 0.08}),	// 14.23068
+	/*17*/	new Hold(new double[] {0.04,    0.002839, 0.0001678, 0.0007, 0.0006, 0.02, 0.08}),	// 14.43068 - Αμοιβές μελετητών
 	};
 
 	static private class Hold {

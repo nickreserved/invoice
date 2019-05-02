@@ -1,19 +1,27 @@
 apply plugin: 'com.android.application'
 
 android {
-	compileSdkVersion 27
-	buildToolsVersion '27.0.3'
+	signingConfigs {
+		config {
+			keyAlias '?'
+			keyPassword '?'
+			storeFile file('?')
+			storePassword '?'
+		}
+	}
+	compileSdkVersion 28
+	buildToolsVersion '28.0.3'
 	defaultConfig {
 		applicationId 'chameleon.army.Invoice'
 		minSdkVersion 14
-		targetSdkVersion 27
-		versionCode 10
+		targetSdkVersion 28
+		versionCode 11
 		signingConfig signingConfigs.config
 	}
 	buildTypes {
 		release {
 			minifyEnabled true
-			proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+			shrinkResources true
 			debuggable false
 			signingConfig signingConfigs.config
 		}
@@ -28,7 +36,4 @@ android {
 		sourceCompatibility JavaVersion.VERSION_1_8
 		targetCompatibility JavaVersion.VERSION_1_8
 	}
-}
-
-dependencies {
 }
