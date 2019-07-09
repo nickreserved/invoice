@@ -164,7 +164,7 @@
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
 					android:id="@+id/spInvoiceType"
-					android:entries="@array/InvoiceType"
+					android:entries="@array/InvoiceTypeArmy"
 					android:layout_alignBaseline="@id/tvInvoiceType"
 					android:layout_toEndOf="@id/tvInvoiceType"
 					android:layout_toRightOf="@id/tvInvoiceType" />

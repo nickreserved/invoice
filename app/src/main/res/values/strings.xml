@@ -1,9 +1,9 @@
 <resources>
-    <string name="app_name">Τιμολόγιο Δαπάνης Στρατού - Αεροπορίας</string>
+    <string name="app_name">Τιμολόγιο Δαπάνης ΕΣ &amp; ΠΑ</string>
     <string name="about">Σχετικά</string>
-    <string name="aboutInfo">Υπολογισμός στοιχείων τιμολογίου για δαπάνη Στρατού και Αεροπορίας\n\nΠαύλος Γκέσος (ΣΣΕ 2002)\nΈκδοση %1$d</string>
+    <string name="aboutInfo">Υπολογισμός στοιχείων τιμολογίου για δαπάνη Στρατού &amp; Αεροπορίας\n\nΠαύλος Γκέσος (ΣΣΕ 2002)\nΈκδοση %1$d</string>
 	<string name="web">Ιστοσελίδα</string>
-    <string name="contractor">Προμηθευτής</string>
+    <string name="contractor">Οικονομικός φορέας</string>
     <string name="hintAmount">Ποσό (€)</string>
     <string name="VAT">ΦΠΑ (%)</string>
     <string name="VATInfo">Όλα τα είδη του τιμολογίου πρέπει να έχουν το ίδιο ΦΠΑ. Το αντίθετο δεν υποστηρίζεται.</string>
@@ -18,7 +18,7 @@
 		<item>ΕΣ</item>
 		<item>ΠΑ</item>
 	</string-array>
-	<string name="tvAirForceWarning">Ο αυτόματος υπολογισμός κρατήσεων και ΦΕ δεν είναι (ακόμα) διαθέσιμος για την ΠΑ, λόγω έλλειψης στοιχείων για δαπάνες έργων, δαπάνες με χρηματοδότηση ιδίων πόρων, δαπάνες προμήθειας από Πρατήρια της Αεροπορίας και δαπάνες για μελετητές.</string>
+	<string name="tvAirForceWarning">Βοηθήστε να υποστηριχθούν δαπάνες έργων, δαπάνες με χρηματοδότηση ιδίων πόρων, δαπάνες προμήθειας από πρατήρια των ΕΔ, δαπάνες μελετητών και δαπάνες μίσθωσης ακινήτων.</string>
 
 	<string name="tvFinancing">Χρηματοδότηση</string>
     <string name="tvInvoiceType">Τύπος τιμολογίου</string>
@@ -30,7 +30,7 @@
 
     <string name="requirements">Απαιτήσεις</string>
 	<string name="reqEmpty">Δεν υπάρχουν</string>
-    <string name="reqContract">‒ Σύναψη σύμβασης με τον προμηθευτή</string>
+    <string name="reqContract">‒ Σύναψη σύμβασης</string>
     <string name="reqCompetitionInformal">‒ Συνοπτικός διαγωνισμός</string>
     <string name="reqCompetitionFormal">‒ Δημόσιος διαγωνισμός</string>
     <string name="reqTaxCurrency">‒ Φορολογική ενημερότητα, για «πληρωμή από το Δημόσιο»</string>
@@ -70,14 +70,14 @@
 	</string-array>
 
     <string-array name="contractors">
-        <item>Ιδιώτης</item>
-        <item>ΝΠΔΔ</item>
-        <item>Στρατός</item>
+        <item>Ιδιωτικός τομέας</item>
+        <item>Δημόσιος τομέας ή ΕΚΕΜΣ</item>
+        <item>Στρατιωτικά Πρατήρια</item>
     </string-array>
     <string-array name="contractorInfo">
-		<item>Ιδιώτες προμηθευτές, εργολάβοι, μάστορες κ.τ.λ.</item>
-        <item>Νομικά Πρόσωπα Δημοσίου Δικαίου (π.χ. ΟΣΕ)</item>
-		<item>Στρατιωτικά πρατήρια</item>
+		<item>Ιδιώτες προμηθευτές, εργολάβοι, μάστορες, υπηρεσίες κ.τ.λ.</item>
+        <item>Δημόσιες Υπηρεσίες (π.χ. ΟΣΕ) ή ΕΚΕΜΣ</item>
+		<item>Στρατιωτικά πρατήρια, πλην ΕΚΕΜΣ</item>
     </string-array>
 
     <string-array name="amountType">
@@ -96,20 +96,28 @@
         <item>Δημόσιο, Στρατός, Καθαρή αξία (όχι σε έργο ΜΧ) ≤ 150€</item>
     </string-array>
 
-    <string-array name="InvoiceType">
+    <string-array name="InvoiceTypeArmy">
         <item>@string/buy</item>
         <item>@string/service</item>
         <item>@string/oil</item>
-		<item>Μίσθωση ακινήτων</item>
-		<item>Λογαριασμοί ύδρευσης - αποχέτευσης ή έργα της ΔΕΗ</item>
+		<item>@string/estate</item>
+		<item>@string/WaterElectricity</item>
 		<item>Εκπόνηση μελέτης μηχανικού</item>
 		<item>Επίβλεψη εφαρμογής μελέτης ή εκπόνηση μελέτης εκτός μηχανικού</item>
     </string-array>
+	<string-array name="InvoiceTypeAirForce">
+		<item>@string/buy</item>
+		<item>@string/service</item>
+		<item>@string/oil</item>
+		<item>@string/WaterElectricity</item>
+		<item>Προμήθεια τροφοδοσίας/καθαριότητας οπλιτών/μαθητών</item>
+	</string-array>
 
 	<string name="buy">Προμήθεια υλικών</string>
 	<string name="service">Παροχή υπηρεσιών</string>
     <string name="oil">Προμήθεια υγρών καυσίμων</string>
 	<string name="estate">Μίσθωση ακινήτων</string>
+	<string name="WaterElectricity">Λογαριασμοί ύδρευσης - αποχέτευσης ή έργα της ΔΕΗ</string>
 
 	<string-array name="FinancingType">
 		<item>Τακτικός Π/Υ</item>

@@ -32,6 +32,49 @@ public class MainActivity extends Activity {
 	/** Λίστα με τις τιμές του επιλογέα ΦΠΑ. */
 	static private final Object[] VAT_DATA = { 24, 13, 6,    17, 9, 5,    13,    0 };
 
+	/** Λίστα με όλες τις κρατήσεις στο Στρατό. */
+	//                             ΜΤΣ,     Χαρτόσημο,ΟΓΑ,       ΕΑΑΔΗΣΥ,ΑΕΠΠ,   ΒΑΜ,  ΕΚΟΕΜΣ
+	final static private Hold[] holdListArmy = {
+	/*0*/	new Hold(new double[0]),															// 0 - Λογαριασμοί νερού, έργα ΔΕΗ
+	/*1*/	new Hold(new double[] {0.03904, 0.0008,   0.00016}),								// 4 - Προμήθεια από Πρατήριο ή ΝΠΔΔ
+	/*2*/	new Hold(new double[] {0.04,    0.0008,   0.00016}),								// 4.096 - Μισθώματα ακινήτων
+	// ΤΑΚΤΙΚΟΣ Π/Υ
+	// Καθαρή αξία < 1000
+	/*3*/	new Hold(new double[] {0.04,    0.000818, 0.0001636, 0,      0.0006}), 				// 4.15816
+	/*4*/	new Hold(new double[] {0.04,    0.002818, 0.0001636, 0,      0.0006}), 				// 4.35816 - Αμοιβές μελετητών
+	// Καθαρή αξία >= 1000
+	/*5*/	new Hold(new double[] {0.04,    0.000839, 0.0001678, 0.0007, 0.0006}), 				// 4.23068
+	/*6*/	new Hold(new double[] {0.04,    0.002839, 0.0001678, 0.0007, 0.0006}), 				// 4.43068 - Αμοιβές μελετητών
+	// Π/Υ ΠΔΕ
+	// Καθαρή αξία < 1000
+	/*7*/	new Hold(new double[] {0,       0.000018, 0.0000036, 0,      0.0006}),				// 0.06216
+	/*8*/	new Hold(new double[] {0,       0.002018, 0.0000036, 0,      0.0006}),				// 0.26216 - Αμοιβές μελετητών
+	// Καθαρή αξία >= 1000
+	/*9*/	new Hold(new double[] {0,       0.000039, 0.0000078, 0.0007, 0.0006}),				// 0.13468
+	/*10*/	new Hold(new double[] {0,       0.002039, 0.0000078, 0.0007, 0.0006}),				// 0.33468 - Αμοιβές μελετητών
+	// ΙΔΙΟΙ ΠΟΡΟΙ
+	/*11*/	new Hold(new double[] {0,       0,        0,         0,      0,      0.02, 0.08}),	// 10 - Λέσχες
+	/*12*/	new Hold(new double[] {0.03904, 0.0008,   0.00016,   0,      0,      0.02, 0.08}),	// 14 - Προμήθεια από Πρατήριο ή ΝΠΔΔ
+	/*13*/	new Hold(new double[] {0.04,	0.0008,   0.00016,   0,	     0,      0.02, 0.08}),	// 14.096 - Μισθώματα ακινήτων
+	// Καθαρή αξία < 1000
+	/*14*/	new Hold(new double[] {0.04,    0.000818, 0.0001636, 0,      0.0006, 0.02, 0.08}),	// 14.15816
+	/*15*/	new Hold(new double[] {0.04,    0.002818, 0.0001636, 0,      0.0006, 0.02, 0.08}),	// 14.35816 - Αμοιβές μελετητών
+	// Καθαρή αξία >= 1000
+	/*16*/	new Hold(new double[] {0.04,	0.000839, 0.0001678, 0.0007, 0.0006, 0.02, 0.08}),	// 14.23068
+	/*17*/	new Hold(new double[] {0.04,    0.002839, 0.0001678, 0.0007, 0.0006, 0.02, 0.08}),	// 14.43068 - Αμοιβές μελετητών
+	};
+
+	/** Λίστα με όλες τις κρατήσεις στην Αεροπορία. */
+	//                             ΜΤΑ, ΕΛΟΑΑ Χαρτόσημο,ΟΓΑ,       ΕΑΑΔΗΣΥ,ΑΕΠΠ
+	final static private Hold[] holdListAirForce = {
+	/*0*/	holdListArmy[0],			        										// 0 - Λογαριασμοί νερού, έργα ΔΕΗ
+	/*1*/	new Hold(new double[] {0.04, 0.02, 0.001218, 0.0002436, 0,      0.0006}),	// 6.20616 - Καθαρή αξία < 1000
+	/*2*/	new Hold(new double[] {0.04, 0.02, 0.001239, 0.0002478, 0.0007, 0.0006}),	// 6.27868 - Καθαρή αξία >= 1000
+	// Ανάγκες τροφοδοσίας και ατομικής καθαριότητας μαθητών/οπλιτών
+	/*3*/	new Hold(new double[] {0,    0,    0.000018, 0.0000036, 0,      0.0006}),	// 0.06216 - Καθαρή αξία < 1000
+	/*4*/	new Hold(new double[] {0,    0,    0.000039, 0.0000078, 0.0007, 0.0006}),	// 0.13468 - Καθαρή αξία >= 1000
+	};
+
 	/** Κλειδί αποθήκευσης του είδους του προμηθευτή. */
 	static private final String CONTRACTOR = "Προμηθευτής";
 	/** Κλειδί αποθήκευσης του ποσοστού ΦΠΑ. */
@@ -97,7 +140,6 @@ public class MainActivity extends Activity {
 											return;
 										}
 									// ...ειδάλλως τον εισάγει
-									@SuppressWarnings("unchecked")
 									ArrayAdapter adapter = (ArrayAdapter) parentView.getAdapter();
 									adapter.insert(holds ? new Hold(num.doubleValue()) :  num.intValue(), other);
 									adapter.notifyDataSetChanged();
@@ -144,19 +186,16 @@ public class MainActivity extends Activity {
 				// με αποτέλεσμα να φαίνεται επιλεγμένη πάντα η πρώτη κράτηση, κρατάμε την υπάρχουσα
 				// επιλεγμένη θέση (αν υπάρχει)
 				spinner.setSelection(a < adapter.getCount() ? a : 0);
-				if (isAuto()) {
-					if (army) {
-						// Το επεξηγηματικό κείμενο του κομβίου αυτόματου υπολογισμού
-						((TextView) findViewById(R.id.tvAutoInfo)).setText(getString(R.string.tvAutoOn));
-						// Εμφάνιση των αυτόματων επιλογών
-						findViewById(R.id.layAutomatic).setVisibility(View.VISIBLE);
-					} else {
-						// Το επεξηγηματικό κείμενο του κομβίου αυτόματου υπολογισμού
-						((TextView) findViewById(R.id.tvAutoInfo)).setText(getString(R.string.tvAirForceWarning));
-						// Απόκρυψη των αυτόματων επιλογών γιατί δεν υποστηρίζονται ακόμα
-						findViewById(R.id.layAutomatic).setVisibility(View.GONE);
-					}
-				}
+				if (isAuto()) guiDisplay(army);
+				//TODO: Αν είναι αεροπορία, δε χρειάζονται components για έργο ΜΧ
+				findViewById(R.id.cbConstruction).setVisibility(army ? View.VISIBLE : View.GONE);
+				// Στο είδος τιμολογίου, προστίθεται άλλη μια επιλογή αν είναι αεροπορία
+				adapter = new ArrayAdapter(
+						MainActivity.this, android.R.layout.simple_spinner_item,
+						getResources().getTextArray(
+								army ? R.array.InvoiceTypeArmy : R.array.InvoiceTypeAirForce));
+				adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+				((Spinner) findViewById(R.id.spInvoiceType)).setAdapter(adapter);
 				calculation();
 			}
 			@Override public void onNothingSelected(AdapterView<?> parentView) {}
@@ -225,13 +264,8 @@ public class MainActivity extends Activity {
 		checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
 			if (isChecked) {
 				findViewById(R.id.layAdvanced).setVisibility(View.GONE);
-				if (isArmy()) {
-					findViewById(R.id.layAutomatic).setVisibility(View.VISIBLE);
-					((TextView) findViewById(R.id.tvAutoInfo)).setText(getString(R.string.tvAutoOn));
-				} else {
-					findViewById(R.id.layAutomatic).setVisibility(View.GONE);
-					((TextView) findViewById(R.id.tvAutoInfo)).setText(getString(R.string.tvAirForceWarning));
-				}
+				findViewById(R.id.layAutomatic).setVisibility(View.VISIBLE);
+				guiDisplay(army);
 			} else {
 				findViewById(R.id.layAdvanced).setVisibility(View.VISIBLE);
 				findViewById(R.id.layAutomatic).setVisibility(View.GONE);
@@ -244,6 +278,12 @@ public class MainActivity extends Activity {
 		checkBox = findViewById(R.id.cbConstruction);
 		checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> calculation());
 		checkBox.setChecked(pref.getBoolean(CONSTRUCTION, false));
+	}
+
+	private void guiDisplay(boolean army) {
+		// Το επεξηγηματικό κείμενο του κομβίου αυτόματου υπολογισμού
+		((TextView) findViewById(R.id.tvAutoInfo)).setText(getString(
+				army ? R.string.tvAutoOn : R.string.tvAirForceWarning));
 	}
 
 	/** Ο αυτόματος υπολογισμός είναι ενεργός.
@@ -401,6 +441,66 @@ public class MainActivity extends Activity {
 		return hold;
 	}
 
+	/** Αυτοματοποιημένος υπολογισμός ποσοστού κρατήσεων του τιμολογίου για την Αεροπορία.
+	 * @param invoiceType Ο τύπος του τιμολογίου
+	 * @param financing Ο τύπος της χρηματοδότησης
+	 * @param net Η καθαρή αξία του τιμολογίου
+	 * @return Οι κρατήσεις του τιμολογίου */
+	static private Hold calculateHoldAirForce(int invoiceType, int financing, double net) {
+		// Ταύτιση με το invoiceType του Στρατού, προκειμένου η κλήση να μοιάζει με αυτή του Στρατου
+		switch(invoiceType) {
+			case 3: ++invoiceType; break;
+			case 4: invoiceType = 7; break;
+		}
+		Hold hold;
+		if (invoiceType == 4 /*Λογαριασμοί νερού/ΔΕΗ*/) hold = holdListAirForce[0];
+		else if (invoiceType == 7) hold = holdListAirForce[net >= PRICE_HOLD_CONTRACT ? 4 : 3];
+//		else if (contractor == 0 /*Ιδιώτης*/) {
+//			if (invoiceType == 3 /*Μισθώματα ακινήτων*/)
+//				switch(financing) {
+//					case 0: /*Τακτικός Π/Υ*/ hold = holdListArmy[2]; break;
+//					case 1: /*Ιδιοι πόροι*/ hold = holdListArmy[13]; break;
+//					default: /*case 2: Π/Υ ΠΔΕ*/ hold = holdListArmy[0];
+//				}
+			else if (net >= PRICE_HOLD_CONTRACT)
+				switch(financing) {
+					case 0: /*Τακτικός Π/Υ*/
+						hold = holdListAirForce[2];//invoiceType >= 5 /*Εκπόνηση/Επίβλεψη μελετών*/ ? 6 : 5];
+						break;
+//					case 1: /*Ιδιοι πόροι*/
+//						hold = holdListArmy[invoiceType >= 5 /*Εκπόνηση/Επίβλεψη μελετών*/ ? 17 : 16];
+//						break;
+					default: /*case 2: Π/Υ ΠΔΕ*/
+						hold = holdListAirForce[4];//invoiceType >= 5 /*Εκπόνηση/Επίβλεψη μελετών*/ ? 10 : 9];
+				}
+			else
+				switch(financing) {
+					case 0: /*Τακτικός Π/Υ*/
+						hold = holdListAirForce[1];//invoiceType >= 5 /*Εκπόνηση/Επίβλεψη μελετών*/ ? 4 : 3];
+						break;
+//					case 1: /*Ιδιοι πόροι*/
+//						hold = holdListArmy[invoiceType >= 5 /*Εκπόνηση/Επίβλεψη μελετών*/ ? 15 : 14];
+//						break;
+					default: /*case 2: Π/Υ ΠΔΕ*/
+						hold = holdListAirForce[3];//invoiceType >= 5 /*Εκπόνηση/Επίβλεψη μελετών*/ ? 8 : 7];
+				}
+			// contractor: 1:ΝΠΔΔ 2:Στρατος
+//		} else hold = holdListArmy[financing == 1 /*Ιδιοι πόροι*/ ? 12 : 1];
+		return hold;
+	}
+
+	/** Αυτοματοποιημένος υπολογισμός ποσοστού κρατήσεων του τιμολογίου.
+	 * @param army Το τιμολόγιο είναι του Στρατού
+	 * @param contractor Ο τύπος του εκδότη του τιμολογίου
+	 * @param invoiceType Ο τύπος του τιμολογίου
+	 * @param financing Ο τύπος της χρηματοδότησης
+	 * @param net Η καθαρή αξία του τιμολογίου
+	 * @return Οι κρατήσεις του τιμολογίου */
+	static private Hold calculateHold(boolean army, int contractor, int invoiceType, int financing, double net) {
+		return army ? calculateHoldArmy(contractor, invoiceType, financing, net)
+				: calculateHoldAirForce(invoiceType, financing, net);
+	}
+
 	/** Η καθαρή αξία πάνω από την οποία έχουμε σύμβαση. */
 	static final private int PRICE_CONTRACT = 2500;
 	/** Η καθαρή αξία πάνω από την οποία οι κρατήσεις προσαυξάνονται. */
@@ -428,9 +528,6 @@ public class MainActivity extends Activity {
 			// Το πρόβλημα εδώ είναι ότι δεν ξέρουμε την καθαρή αξία!
 			// Για το λόγο αυτό κάποιοι έλεγχοι θα γίνουν μεταγενέστερα.
 			if (auto) {
-				// Για την ΠΑ οι αυτόματοι υπολογισμοί δεν είναι έτοιμοι
-				if (!army) throw new NumberFormatException();
-
 				Spinner spFinancingType = findViewById(R.id.spFinancingType);
 				int financing = spFinancingType.getSelectedItemPosition();
 
@@ -440,6 +537,14 @@ public class MainActivity extends Activity {
 					spFinancingType.setSelection(financing = 0);
 				// Σε κατασκευαστικές δαπάνες, προμηθευτής είναι πάντα ιδιώτης
 				if (contractor != 0 /*Όχι ιδιώτης*/) construction = false;
+				// Σε τιμολόγιο αεροπορίας
+				if (!army) {
+					construction = false;               // δεν έχουμε κατασκευαστικές δαπάνες
+					// δεν υποστηρίζεται χρηματοδότηση ιδίων πόρων
+					if (financing == 1 /*Ίδιοι Πόροι*/) spFinancingType.setSelection(financing = 0);
+					if (contractor != 0 /*Ιδιώτης*/)	// και προμηθευτής είναι πάντα ιδιώτης
+						((Spinner) findViewById(R.id.spContractorType)).setSelection(contractor = 0);
+				}
 				// Σε κατασκευαστικές δαπάνες, τιμολόγια προμήθειας υλικών, παροχής υπηρεσιών ή εκπόνησης μελετών μόνο
 				if (construction && invoiceType != 0 /*Προμήθεια υλικών*/ && invoiceType != 1 /*Παροχή υπηρεσιών*/
 						&& invoiceType < 5 /*5:Εκπόνηση & 6:Επίβλεψη μελετών*/)
@@ -449,22 +554,23 @@ public class MainActivity extends Activity {
 					invoiceType = 0; //Προμήθεια υλικών
 
 				// Υπολογισμός του ΦΕ
-				if (contractor != 0 /*Όχι ιδιώτης*/ || invoiceType == 3 /*Μίσθωση ακινήτου*/
-						|| invoiceType == 4 /*Λογαριασμοί νερού - έργα ΔΕΗ*/) fePercent = 0;
+				if (contractor != 0 /*Όχι ιδιώτης*/ || invoiceType == 3 /*Μίσθωση ακινήτου για Στρατό, Λογαριασμοί νερού - έργα ΔΕΗ για Αεροπορία*/
+						|| army && invoiceType == 4 /*Λογαριασμοί νερού - έργα ΔΕΗ*/) fePercent = 0;
 				// Μεταγενέστερα: if (!construction && net <= 150) fePercent = 0;
 				else if (invoiceType == 2 /*Προμήθεια υγρών καυσίμων*/) fePercent = 0.01;
 				else if (invoiceType == 1 /*Παροχή υπηρεσιών*/)
 					fePercent = construction /*Κατασκευή έργου*/ ? 0.03 : 0.08;
 				else if (invoiceType == 6 /*Επίβλεψη μελέτης*/) fePercent = 0.1;
-				else fePercent = 0.04; /*invoiceType: 4:Προμήθεια υλικών ή 5:Εκπόνηση μελέτης*/
+				else fePercent = 0.04; /*invoiceType: 0:Προμήθεια υλικών ή 5:Εκπόνηση μελέτης ή 4:Τροφοδοσία/Καθαριότητα Οπλιτών Αεροπορίας*/
 
 				// Υπολογισμός κρατήσεων, αρχικά θεωρώντας την καθαρή αξία >= PRICE_HOLD_CONTRACT
-				hold = calculateHoldArmy(contractor, invoiceType, financing, PRICE_HOLD_CONTRACT + 0.001); // truncation prediction
+				// To +0.001 προστίθεται για να αποφευχθεί κάποια καταστροφική αποκοπή
+				hold = calculateHold(army, contractor, invoiceType, financing, PRICE_HOLD_CONTRACT + 0.001);
 				// Εύρεση καθαρής αξίας
 				double net = calculateNet(contractor, amountType, amount, fpaPercent, hold.total, 0);
 				// Αν καθαρή αξία < PRICE_HOLD_CONTRACT, επανυπολογισμός κρατήσεων και καθαρής αξίας
 				if (net < PRICE_HOLD_CONTRACT) {
-					hold = calculateHoldArmy(contractor, invoiceType, financing, net);
+					hold = calculateHold(army, contractor, invoiceType, financing, net);
 					net = calculateNet(contractor, amountType, amount, fpaPercent, hold.total, 0);
 				}
 				// Αν καθαρή αξία <= PRICE_INCOME_TAX και δεν έχουμε κατασκευή, το ΦΕ είναι 0
@@ -514,7 +620,7 @@ public class MainActivity extends Activity {
 			if (contractor != 2 /* όχι Στρατός */ && (amount > PRICE_CONTRACT || construction && auto))
 				txt.append(getString(R.string.reqContract)).append("\n");
 			if (amount > 60000) txt.append(getString(R.string.reqCompetitionFormal)).append("\n");
-			else if (amount > 20000) txt.append(getString(R.string.reqCompetitionInformal)).append("\n");
+			else if (amount > 20000 || construction && auto) txt.append(getString(R.string.reqCompetitionInformal)).append("\n");
 			if (amount > 20000) txt.append(getString(R.string.reqCriminalRecordDenial)).append("\n");
 			if (auto && construction && invoiceType == 1 /* Παροχή υπηρεσιών */)
 				txt.append(String.format(getString(R.string.reqConstructionContractor),
@@ -544,49 +650,6 @@ public class MainActivity extends Activity {
 		}
 	}
 
-	/** Λίστα με όλες τις κρατήσεις στο Στρατό. */
-	//                             ΜΤΣ,     Χαρτόσημο,ΟΓΑ,       ΕΑΑΔΗΣΥ,ΑΕΠΠ,   ΒΑΜ,  ΕΚΟΕΜΣ
-	final static private Hold[] holdListArmy = {
-	/*0*/	new Hold(new double[0]),															// 0 - Λογαριασμοί νερού, έργα ΔΕΗ
-	/*1*/	new Hold(new double[] {0.03904, 0.0008,   0.00016}),								// 4 - Προμήθεια από Πρατήριο ή ΝΠΔΔ
-	/*2*/	new Hold(new double[] {0.04,    0.0008,   0.00016}),								// 4.096 - Μισθώματα ακινήτων
-			// ΤΑΚΤΙΚΟΣ Π/Υ
-			// Καθαρή αξία < 1000
-	/*3*/	new Hold(new double[] {0.04,    0.000818, 0.0001636, 0,      0.0006}), 				// 4.15816
-	/*4*/	new Hold(new double[] {0.04,    0.002818, 0.0001636, 0,      0.0006}), 				// 4.35816 - Αμοιβές μελετητών
-			// Καθαρή αξία >= 1000
-	/*5*/	new Hold(new double[] {0.04,    0.000839, 0.0001678, 0.0007, 0.0006}), 				// 4.23068
-	/*6*/	new Hold(new double[] {0.04,    0.002839, 0.0001678, 0.0007, 0.0006}), 				// 4.43068 - Αμοιβές μελετητών
-			// Π/Υ ΠΔΕ
-			// Καθαρή αξία < 1000
-	/*7*/	new Hold(new double[] {0,       0.000018, 0.0000036, 0,      0.0006}),				// 0.06216
-	/*8*/	new Hold(new double[] {0,       0.002018, 0.0000036, 0,      0.0006}),				// 0.26216 - Αμοιβές μελετητών
-			// Καθαρή αξία >= 1000
-	/*9*/	new Hold(new double[] {0,       0.000039, 0.0000078, 0.0007, 0.0006}),				// 0.13468
-	/*10*/	new Hold(new double[] {0,       0.002039, 0.0000078, 0.0007, 0.0006}),				// 0.33468 - Αμοιβές μελετητών
-			// ΙΔΙΟΙ ΠΟΡΟΙ
-	/*11*/	new Hold(new double[] {0,       0,        0,         0,      0,      0.02, 0.08}),	// 10 - Λέσχες
-	/*12*/	new Hold(new double[] {0.03904, 0.0008,   0.00016,   0,      0,      0.02, 0.08}),	// 14 - Προμήθεια από Πρατήριο ή ΝΠΔΔ
-	/*13*/	new Hold(new double[] {0.04,	0.0008,   0.00016,   0,	     0,      0.02, 0.08}),	// 14.096 - Μισθώματα ακινήτων
-			// Καθαρή αξία < 1000
-	/*14*/	new Hold(new double[] {0.04,    0.000818, 0.0001636, 0,      0.0006, 0.02, 0.08}),	// 14.15816
-	/*15*/	new Hold(new double[] {0.04,    0.002818, 0.0001636, 0,      0.0006, 0.02, 0.08}),	// 14.35816 - Αμοιβές μελετητών
-			// Καθαρή αξία >= 1000
-	/*16*/	new Hold(new double[] {0.04,	0.000839, 0.0001678, 0.0007, 0.0006, 0.02, 0.08}),	// 14.23068
-	/*17*/	new Hold(new double[] {0.04,    0.002839, 0.0001678, 0.0007, 0.0006, 0.02, 0.08}),	// 14.43068 - Αμοιβές μελετητών
-	};
-
-	/** Λίστα με όλες τις κρατήσεις στην Αεροπορία. */
-	//                             ΜΤΑ, ΕΛΟΑΑ Χαρτόσημο,ΟΓΑ,       ΕΑΑΔΗΣΥ,ΑΕΠΠ
-	final static private Hold[] holdListAirForce = {
-	/*0*/	holdListArmy[0],			        										// 0 - Λογαριασμοί νερού, έργα ΔΕΗ
-	/*1*/	new Hold(new double[] {0.04, 0.02, 0.001239, 0.0002478, 0.0007, 0.0006}),   // 6.27868 - Καθαρή αξία >= 1000
-	/*2*/	new Hold(new double[] {0.04, 0.02, 0.001218, 0.0002436, 0,      0.0006}),   // 6.20616 - Καθαρή αξία < 1000
-			// Ανάγκες τροφοδοσίας και ατομικής καθαριότητας μαθητών/οπλιτών
-	/*3*/	holdListArmy[7],                                                           	// 0.06216 - Καθαρή αξία < 1000
-	/*4*/	holdListArmy[9]                                                         	// 0.13468 - Καθαρή αξία >= 1000
-	};
-
 	/** Κράτηση. */
 	static private class Hold {
 		/** Δημιουργία μιας κράτησης, σαν σύνολο, χωρίς επιμέρους κρατήσεις.
@@ -611,7 +674,8 @@ public class MainActivity extends Activity {
 		 * @return Οι επιμέρους κρατήσεις σε €, διορθωμένες ώστε να έχουν άθροισμα το συνολικό ποσό */
 		double[] euro(double holds) {
 			if (data == null) return null;
-			double euroTotal = 0, euroData[] = new double[data.length];
+			double euroTotal = 0;
+			double[] euroData = new double[data.length];
 			class Pair {
 				private Pair(double remainder, int id) { this.remainder = remainder; this.id = id; }
 				private double remainder;
@@ -627,11 +691,7 @@ public class MainActivity extends Activity {
 			// Σφάλματα στρογγυλοποίησης
 			int remainder = (int) Math.round((euroTotal - holds) * 100.0);
 			if (remainder != 0) {
-				Collections.sort(remainders, (a, b) -> {
-					if (a.remainder < b.remainder) return -1;
-					if (a.remainder > b.remainder) return 1;
-					return 0;
-				});
+				Collections.sort(remainders, (a, b) -> Double.compare(a.remainder, b.remainder));
 				if (remainder > 0)
 					for (int z = 0; z < remainder; ++z) {
 						Pair p = remainders.get(remainders.size() - 1 - z);
