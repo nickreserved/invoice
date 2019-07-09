@@ -1,21 +1,28 @@
 <resources>
-    <string name="app_name">Τιμολόγιο Δαπάνης Στρατού</string>
+    <string name="app_name">Τιμολόγιο Δαπάνης Στρατού - Αεροπορίας</string>
     <string name="about">Σχετικά</string>
-    <string name="aboutInfo">Υπολογισμός στοιχείων τιμολογίου για δαπάνη Στρατού Ξηράς\n\nΠαύλος Γκέσος (ΣΣΕ 2002)\nΈκδοση %1$d</string>
+    <string name="aboutInfo">Υπολογισμός στοιχείων τιμολογίου για δαπάνη Στρατού και Αεροπορίας\n\nΠαύλος Γκέσος (ΣΣΕ 2002)\nΈκδοση %1$d</string>
 	<string name="web">Ιστοσελίδα</string>
     <string name="contractor">Προμηθευτής</string>
     <string name="hintAmount">Ποσό (€)</string>
-    <string name="FPA">ΦΠΑ (%)</string>
-    <string name="FPAInfo">Όλα τα είδη του τιμολογίου πρέπει να έχουν το ίδιο ΦΠΑ. Το αντίθετο δεν υποστηρίζεται.</string>
+    <string name="VAT">ΦΠΑ (%)</string>
+    <string name="VATInfo">Όλα τα είδη του τιμολογίου πρέπει να έχουν το ίδιο ΦΠΑ. Το αντίθετο δεν υποστηρίζεται.</string>
     <string name="automatic">Κρατήσεις &amp; ΦΕ, αυτόματα</string>
     <string name="tvAutoOn">Με την Φ.830/40/1173153/Σ.2320/23 Απρ 19/ΓΕΣ/ΔΟΙ</string>
 	<string name="tvAutoOff">Μόνο για έμπειρους χρήστες με ευχέρεια στις δαπάνες</string>
     <string name="Holds">Κρατήσεις (%)</string>
-    <string name="FE">ΦΕ (%)</string>
+    <string name="IncomeTax">ΦΕ (%)</string>
+
+	<string name="arm">Κλάδος ΕΔ</string>
+	<string-array name="armType">
+		<item>ΕΣ</item>
+		<item>ΠΑ</item>
+	</string-array>
+	<string name="tvAirForceWarning">Ο αυτόματος υπολογισμός κρατήσεων και ΦΕ δεν είναι (ακόμα) διαθέσιμος για την ΠΑ, λόγω έλλειψης στοιχείων για δαπάνες έργων, δαπάνες με χρηματοδότηση ιδίων πόρων, δαπάνες προμήθειας από Πρατήρια της Αεροπορίας και δαπάνες για μελετητές.</string>
 
 	<string name="tvFinancing">Χρηματοδότηση</string>
     <string name="tvInvoiceType">Τύπος τιμολογίου</string>
-    <string name="cbConstruction">Πίστωση ΓΕΣ/ΔΙΠΠΕ</string>
+    <string name="cbConstruction">Έργο</string>
 
     <string name="newValue">Δώστε μια νέα τιμή (%)</string>
     <string name="existedValue">Η τιμή υπάρχει ήδη</string>
@@ -27,9 +34,9 @@
     <string name="reqCompetitionInformal">‒ Συνοπτικός διαγωνισμός</string>
     <string name="reqCompetitionFormal">‒ Δημόσιος διαγωνισμός</string>
     <string name="reqTaxCurrency">‒ Φορολογική ενημερότητα, για «πληρωμή από το Δημόσιο»</string>
-    <string name="reqInsuranceCurrency">‒ Ασφαλιστική ενημερότητα (Φ.830/56/999997/Σ.5711/18 Οκτ 17/ΓΕΣ/ΔΟΙ)</string>
-	<string name="reqCriminalRecord">‒ Απόσπασμα ποινικού μητρώου (Φ.830/56/999997/Σ.5711/18 Οκτ 17/ΓΕΣ/ΔΟΙ)</string>
-	<string name="reqCriminalRecordDenial">‒ Ο εργολάβος δεν πρέπει να έχει αριθμό καταδικαστικών αποφάσεων εργατικής φύσεως την τελευταία διετία (Φ.830/56/999997/Σ.5711/18 Οκτ 17/ΓΕΣ/ΔΟΙ)</string>
+    <string name="reqInsuranceCurrency">‒ Ασφαλιστική ενημερότητα</string>
+	<string name="reqCriminalRecord">‒ Απόσπασμα ποινικού μητρώου</string>
+	<string name="reqCriminalRecordDenial">‒ Ο εργολάβος δεν πρέπει να έχει αριθμό καταδικαστικών αποφάσεων εργατικής φύσεως την τελευταία διετία</string>
 	<string name="reqConstructionContractor">‒ Ο εργολάβος πρέπει να μας υποβάλει αποδεικτικά κατάθεσης (%% της καθαρής αξίας) για:\n\t• 1%% ΤΠΕΔΕ (%1$s) μαζί με τα χαρτόσημα\n\t• 0.6%% Π.Ο. ΕΜ∆Υ∆ΑΣ (%2$s) στο λογαριασμό ΙΒΑΝ: GR5701100800000008000587009</string>
 
     <string name="results">Αποτελέσματα</string>
@@ -37,14 +44,14 @@
     <string name="resVAT">+ ΦΠΑ %1$s:\t\t%2$s\n</string>
     <string name="resMixed">Καταλογιστέο:\t\t%1$s\n‒ %2$sΠληρωτέο:\t\t%3$s</string>
     <string name="resHolds">Κρατήσεις %1$s:\t\t%2$s\n</string>
-    <string name="resFE">\n‒ ΦΕ %1$s:\t\t%2$s\nΥπόλοιπο πληρωτέο:\t\t%3$s</string>
+    <string name="resIncomeTax">\n‒ ΦΕ %1$s:\t\t%2$s\nΥπόλοιπο πληρωτέο:\t\t%3$s</string>
 
 	<string name="hldTitle">Ανάλυση Κρατήσεων</string>
 	<string name="hldFail">Για κρατήσεις που εισάγει ο χρήστης, η ανάλυση κρατήσεων δεν είναι διαθέσιμη</string>
 	<string name="hldTotal">ΣΥΝΟΛΟ</string>
 	<string name="hldPart">%1$s %2$s:\t\t%3$s\n</string>
 
-	<string-array name="hldParts">
+	<string-array name="hldPartsArmy">
 		<item>ΜΤΣ</item>
 		<item>Χαρτόσημο</item>
 		<item>ΟΓΑ</item>
@@ -52,6 +59,14 @@
 		<item>ΑΕΠΠ</item>
 		<item>ΒΑΜ</item>
 		<item>ΕΚΟΕΜΣ</item>
+	</string-array>
+	<string-array name="hldPartsAirForce">
+		<item>ΜΤΑ</item>
+		<item>ΕΛΟΑΑ</item>
+		<item>Χαρτόσημο</item>
+		<item>ΟΓΑ</item>
+		<item>ΕΑΑΔΗΣΥ</item>
+		<item>ΑΕΠΠ</item>
 	</string-array>
 
     <string-array name="contractors">
@@ -72,7 +87,7 @@
         <item>Υπόλοιπο πληρωτέο</item>
     </string-array>
 
-    <string-array name="FEInfo">
+    <string-array name="IncomeTaxInfo">
 		<item>Προμήθεια υλικών, εκπόνηση μελέτης μηχανικού</item>
 		<item>@string/service</item>
 		<item>Παροχή υπηρεσιών (εργολαβία) σε δαπάνη κατασκευής έργου</item>

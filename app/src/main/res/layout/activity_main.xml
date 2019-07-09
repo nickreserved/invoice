@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <TextView
+	    <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/contractor"
@@ -57,23 +57,23 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/layFPA"
+            android:id="@+id/layVAT"
             android:layout_below="@id/spAmountType"
             android:layout_marginTop="@dimen/module_vertical_margin">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/FPA"
+                android:text="@string/VAT"
                 android:id="@+id/tvFPA"
                 android:textAppearance="@android:style/TextAppearance.Widget.TextView"
-                android:labelFor="@+id/spFPA"
+                android:labelFor="@+id/spVAT"
                 android:paddingTop="@dimen/textview_vertical_padding" />
 
             <Spinner
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/spFPA"
+                android:id="@+id/spVAT"
                 android:layout_toEndOf="@id/tvFPA"
                 android:layout_toRightOf="@id/tvFPA"
                 android:layout_alignBaseline="@id/tvFPA" />
@@ -81,18 +81,37 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/FPAInfo"
+                android:text="@string/VATInfo"
                 android:layout_below="@id/tvFPA" />
 
         </RelativeLayout>
 
-        <Switch
+	    <TextView
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
+		    android:text="@string/arm"
+		    android:id="@+id/tvArm"
+		    android:textAppearance="@android:style/TextAppearance.Widget.TextView"
+		    android:labelFor="@+id/spArmType"
+		    android:layout_below="@id/layVAT"
+		    android:layout_marginTop="@dimen/module_vertical_margin" />
+
+	    <Spinner
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
+		    android:id="@+id/spArmType"
+		    android:entries="@array/armType"
+		    android:layout_alignBaseline="@id/tvArm"
+		    android:layout_toEndOf="@id/tvArm"
+		    android:layout_toRightOf="@id/tvArm" />
+
+	    <Switch
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/automatic"
             android:id="@+id/swAuto"
             android:checked="true"
-            android:layout_below="@+id/layFPA"
+            android:layout_below="@+id/spArmType"
             android:layout_marginTop="@dimen/module_vertical_margin" />
 
         <TextView
@@ -162,7 +181,7 @@
 
         </RelativeLayout>
 
-        <RelativeLayout
+	    <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/layAdvanced"
@@ -190,23 +209,23 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/layFE"
+                android:id="@+id/layIncomeTax"
                 android:layout_below="@id/spHolds"
                 android:layout_marginTop="@dimen/module_vertical_margin">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/FE"
+                    android:text="@string/IncomeTax"
                     android:id="@+id/tvFE"
                     android:textAppearance="@android:style/TextAppearance.Widget"
                     android:paddingTop="@dimen/textview_vertical_padding"
-	                android:labelFor="@+id/spFE" />
+	                android:labelFor="@+id/spIncomeTax" />
 
                 <Spinner
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:id="@id/spFE"
+                    android:id="@id/spIncomeTax"
                     android:layout_toEndOf="@id/tvFE"
                     android:layout_toRightOf="@id/tvFE"
                     android:layout_alignBaseline="@id/tvFE" />

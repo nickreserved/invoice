@@ -25,20 +25,35 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 
+/** Η μια και μοναδική (κύρια) "δραστηριότητα" του προγράμματος. */
 public class MainActivity extends Activity {
-	static private final String CONTRACTOR = "Προμηθευτής";
-	static private final String FPA = "ΦΠΑ";
-	static private final String FE = "ΦΕ";
-	static private final String HOLDS = "Κρατήσεις";
-	static private final String INVOICE_TYPE = "ΤύποςΤιμολογίου";
-	static private final String AMOUNT_TYPE = "ΤύποςΠοσού";
-	static private final String AMOUNT = "Ποσό";
-	static private final String AUTOMATIC = "Αυτόματο";
-	static private final String FINANCING_TYPE = "Χρηματοδότηση";
-	static private final String CONSTRUCTION = "Εγκαταστάσεις";
+	/** Λίστα με τις τιμές του επιλογέα ΦΕ. */
+	static private final Object[] INCOME_TAX_DATA = { 4, 8, 3, 1, 10, 0 };
+	/** Λίστα με τις τιμές του επιλογέα ΦΠΑ. */
+	static private final Object[] VAT_DATA = { 24, 13, 6,    17, 9, 5,    13,    0 };
 
-	static private final Object[] FE_DATA = { 4, 8, 3, 1, 10, 0, "Άλλο" };
-	static private final Object[] FPA_DATA = { 24, 13, 6,    17, 9, 5,    13,    0, "Άλλο" };
+	/** Κλειδί αποθήκευσης του είδους του προμηθευτή. */
+	static private final String CONTRACTOR = "Προμηθευτής";
+	/** Κλειδί αποθήκευσης του ποσοστού ΦΠΑ. */
+	static private final String VAT = "ΦΠΑ";
+	/** Κλειδί αποθήκευσης του ποσοστού ΦΕ. */
+	static private final String INCOME_TAX = "ΦΕ";
+	/** Κλειδί αποθήκευσης του ποσοστού Κρατήσεων. */
+	static private final String HOLDS = "Κρατήσεις";
+	/** Κλειδί αποθήκευσης του τύπου του τιμολογίου. */
+	static private final String INVOICE_TYPE = "ΤύποςΤιμολογίου";
+	/** Κλειδί αποθήκευσης του τύπου του ποσού. */
+	static private final String AMOUNT_TYPE = "ΤύποςΠοσού";
+	/** Κλειδί αποθήκευσης του ποσού. */
+	static private final String AMOUNT = "Ποσό";
+	/** Κλειδί αποθήκευσης για το αν είναι ενεργός ο αυτόματος υπολογισμός κρατήσεων και ΦΕ. */
+	static private final String AUTOMATIC = "Αυτόματο";
+	/** Κλειδί αποθήκευσης για τον τύπο της χρηματοδότησης. */
+	static private final String FINANCING_TYPE = "Χρηματοδότηση";
+	/** Κλειδί αποθήκευσης για το αν η δαπάνη αφορά έργο. */
+	static private final String CONSTRUCTION = "Εγκαταστάσεις";
+	/** Κλειδί αποθήκευσης για τον κλάδο των Ενόπλων Δυνάμεων. */
+	static private final String ARM_TYPE = "Κλάδος";
 
 	// Αρχικοποίηση του Activity
 	@Override
@@ -47,12 +62,13 @@ public class MainActivity extends Activity {
 		setContentView(R.layout.activity_main);
 		SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 
-		// Κοινός listener για spinner ΦΠΑ και ΦΕ
+		// Κοινός listener για spinner Κρατήσεων, ΦΠΑ και ΦΕ
 		AdapterView.OnItemSelectedListener listener = new AdapterView.OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(final AdapterView<?> parentView, View selectedItemView, int position, long id) {
 				final int other = parentView.getCount() - 1;
-				if (other == position) {
+				if (other == position) {    // Η τελευταία επιλογή είναι "Άλλο"
+					// Ένας EditText για να εισάγουμε το νέο ποσοστό κρατήσεων ή ΦΠΑ ή ΦΕ
 					final EditText txtNum = new EditText(MainActivity.this);
 					final boolean holds = parentView == findViewById(R.id.spHolds);
 					int flags = InputType.TYPE_CLASS_NUMBER;
@@ -85,41 +101,76 @@ public class MainActivity extends Activity {
 									ArrayAdapter adapter = (ArrayAdapter) parentView.getAdapter();
 									adapter.insert(holds ? new Hold(num.doubleValue()) :  num.intValue(), other);
 									adapter.notifyDataSetChanged();
-									setFEInfo(parentView);
+									setIncomeTaxInfo(parentView);
 								} catch (NumberFormatException e) {}
 							})
 							.setNegativeButton(android.R.string.cancel, (dialog, whichButton) -> {
 								parentView.setSelection(0);
 								((ArrayAdapter) parentView.getAdapter()).notifyDataSetChanged();
-								setFEInfo(parentView);
+								setIncomeTaxInfo(parentView);
 							})
 							.show();
-				} else setFEInfo(parentView);
+				} else setIncomeTaxInfo(parentView);
 			}
 			@Override public void onNothingSelected(AdapterView<?> parentView) {}
 		};
 
 		// Αρχικοποίηση spinner ΦΠΑ
-		Spinner spinner = findViewById(R.id.spFPA);
-		spinner.setAdapter(createAdapter(FPA_DATA));
+		Spinner spinner = findViewById(R.id.spVAT);
+		spinner.setAdapter(createAdapter(VAT_DATA));
 		spinner.setOnItemSelectedListener(listener);
-		int a = pref.getInt(FPA, 0);
-		spinner.setSelection(a < FPA_DATA.length - 1 ? a : 0);
+		int a = pref.getInt(VAT, 0);
+		spinner.setSelection(a >= 0 && a < VAT_DATA.length ? a : 0);
 		// Αρχικοποίηση spinner ΦΕ
-		spinner = findViewById(R.id.spFE);
-		spinner.setAdapter(createAdapter(FE_DATA));
+		spinner = findViewById(R.id.spIncomeTax);
+		spinner.setAdapter(createAdapter(INCOME_TAX_DATA));
 		spinner.setOnItemSelectedListener(listener);
-		a = pref.getInt(FE, 0);
-		spinner.setSelection(a < FE_DATA.length - 1 ? a : 0);
-		setFEInfo(spinner);
+		a = pref.getInt(INCOME_TAX, 0);
+		spinner.setSelection(a >= 0 && a < INCOME_TAX_DATA.length ? a : 0);
+		setIncomeTaxInfo(spinner);
+		// Αρχικοποίηση spinner για τον κλάδο των ΕΔ
+		spinner = findViewById(R.id.spArmType);
+		a = pref.getInt(ARM_TYPE, 0);
+		spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+			@Override public void onItemSelected(final AdapterView<?> parentView, View selectedItemView, int position, long id) {
+				// Αρχικοποίηση spinner κρατήσεων
+				boolean army = position == 0;
+				Hold[] holdList = army ? holdListArmy : holdListAirForce;
+				ArrayAdapter adapter = createAdapter(holdList);
+				Spinner spinner = findViewById(R.id.spHolds);
+				int a = spinner.getSelectedItemPosition();
+				spinner.setAdapter(adapter);
+				// Επειδή κατά την αρχικοποίηση τρέχει, χαλάει την επιλογή που μόλις έχει φορτωθεί
+				// με αποτέλεσμα να φαίνεται επιλεγμένη πάντα η πρώτη κράτηση, κρατάμε την υπάρχουσα
+				// επιλεγμένη θέση (αν υπάρχει)
+				spinner.setSelection(a < adapter.getCount() ? a : 0);
+				if (isAuto()) {
+					if (army) {
+						// Το επεξηγηματικό κείμενο του κομβίου αυτόματου υπολογισμού
+						((TextView) findViewById(R.id.tvAutoInfo)).setText(getString(R.string.tvAutoOn));
+						// Εμφάνιση των αυτόματων επιλογών
+						findViewById(R.id.layAutomatic).setVisibility(View.VISIBLE);
+					} else {
+						// Το επεξηγηματικό κείμενο του κομβίου αυτόματου υπολογισμού
+						((TextView) findViewById(R.id.tvAutoInfo)).setText(getString(R.string.tvAirForceWarning));
+						// Απόκρυψη των αυτόματων επιλογών γιατί δεν υποστηρίζονται ακόμα
+						findViewById(R.id.layAutomatic).setVisibility(View.GONE);
+					}
+				}
+				calculation();
+			}
+			@Override public void onNothingSelected(AdapterView<?> parentView) {}
+		});
+		spinner.setSelection(a < spinner.getCount() ? a : 0);
+		boolean army = a == 0;
 		// Αρχικοποίηση spinner κρατήσεων
+		Hold[] holdList = army ? holdListArmy : holdListAirForce;
 		ArrayAdapter adapter = createAdapter(holdList);
 		spinner = findViewById(R.id.spHolds);
 		spinner.setAdapter(adapter);
 		spinner.setOnItemSelectedListener(listener);
 		a = pref.getInt(HOLDS, 0);
-		spinner.setSelection(a >= 0 && a < holdList.length ? a : 0);
-		adapter.add("Άλλο");
+		spinner.setSelection(a < holdList.length ? a : 0);
 		// Αρχικοποίηση spinner προμηθευτή
 		spinner = findViewById(R.id.spContractorType);
 		a = pref.getInt(CONTRACTOR, 0);
@@ -129,9 +180,9 @@ public class MainActivity extends Activity {
 				// Περιγραφή του είδους του προμηθευτή
 				((TextView) findViewById(R.id.tvContractorInfo)).setText(getResources().getStringArray(R.array.contractorInfo)[position]);
 				// Αν δεν είναι ιδιώτης, δε χρειάζονται components για ΦΕ
-				findViewById(R.id.layFE).setVisibility(position != 0 /* Όχι ιδιώτης */ ? View.GONE : View.VISIBLE);
+				findViewById(R.id.layIncomeTax).setVisibility(position != 0 /* Όχι ιδιώτης */ ? View.GONE : View.VISIBLE);
 				// Αν είναι στρατός, δε χρειάζονται components για ΦΠΑ
-				findViewById(R.id.layFPA).setVisibility(position == 2 /* Στρατός */ ? View.GONE : View.VISIBLE);
+				findViewById(R.id.layVAT).setVisibility(position == 2 /* Στρατός */ ? View.GONE : View.VISIBLE);
 				// Αν δεν είναι ιδιώτης, δε χρειάζονται components για έργο ΜΧ
 				findViewById(R.id.cbConstruction).setVisibility(position != 0 /* Όχι ιδιώτης */ ? View.GONE : View.VISIBLE);
 				// Αν είναι στρατός, δε χρειάζονται components για το είδος τιμολογίου
@@ -147,13 +198,15 @@ public class MainActivity extends Activity {
 			@Override public void onItemSelected(final AdapterView<?> parentView, View selectedItemView, int position, long id) { calculation(); }
 			@Override public void onNothingSelected(AdapterView<?> parentView) {}
 		};
-		// Αρχικοποίηση spinners του τύπου της αξίας, του τιμολογίου, της χρηματοδότησης
+		// Αρχικοποίηση spinners του τύπου της αξίας
 		spinner = findViewById(R.id.spAmountType);
 		spinner.setOnItemSelectedListener(swListener);
 		spinner.setSelection(pref.getInt(AMOUNT_TYPE, 0));
+		// Αρχικοποίηση spinners του τύπου του τιμολογίου
 		spinner = findViewById(R.id.spInvoiceType);
 		spinner.setOnItemSelectedListener(swListener);
 		spinner.setSelection(pref.getInt(INVOICE_TYPE, 0));
+		// Αρχικοποίηση spinners του τύπου της χρηματοδότησης
 		spinner = findViewById(R.id.spFinancingType);
 		spinner.setOnItemSelectedListener(swListener);
 		spinner.setSelection(pref.getInt(FINANCING_TYPE, 0));
@@ -165,14 +218,20 @@ public class MainActivity extends Activity {
 			@Override public void onTextChanged(CharSequence s, int start, int before, int count) {}
 		});
 		float b = pref.getFloat(AMOUNT, 0);
-		if (b > 0) editText.setText(new DecimalFormat("0.##").format(b));
+		if (b > 0) editText.setText(Float.toString(b));
+		spinner.setSelection(pref.getInt(ARM_TYPE, 0));
 		// Αρχικοποίηση compound button για τον αυτόματο υπολογισμό
 		CompoundButton checkBox = findViewById(R.id.swAuto);
 		checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
 			if (isChecked) {
 				findViewById(R.id.layAdvanced).setVisibility(View.GONE);
-				findViewById(R.id.layAutomatic).setVisibility(View.VISIBLE);
-				((TextView) findViewById(R.id.tvAutoInfo)).setText(getString(R.string.tvAutoOn));
+				if (isArmy()) {
+					findViewById(R.id.layAutomatic).setVisibility(View.VISIBLE);
+					((TextView) findViewById(R.id.tvAutoInfo)).setText(getString(R.string.tvAutoOn));
+				} else {
+					findViewById(R.id.layAutomatic).setVisibility(View.GONE);
+					((TextView) findViewById(R.id.tvAutoInfo)).setText(getString(R.string.tvAirForceWarning));
+				}
 			} else {
 				findViewById(R.id.layAdvanced).setVisibility(View.VISIBLE);
 				findViewById(R.id.layAutomatic).setVisibility(View.GONE);
@@ -187,10 +246,21 @@ public class MainActivity extends Activity {
 		checkBox.setChecked(pref.getBoolean(CONSTRUCTION, false));
 	}
 
-	// Κοινός κώδικας που δημιουργεί τον ArrayAdapter του spinner του ΦΠΑ, κρατήσεων και ΦΕ
-	private <T> ArrayAdapter<T> createAdapter(T[] array) {
-		ArrayAdapter<T> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item,
+	/** Ο αυτόματος υπολογισμός είναι ενεργός.
+	 * @return Ο αυτόματος υπολογισμός είναι ενεργός */
+	private boolean isAuto() { return ((CompoundButton) findViewById(R.id.swAuto)).isChecked(); }
+
+	/** Στο spinner του Κλάδου των Ενόπλων Δυνάμεων, είναι επιλεγμένος ο ΕΣ.
+	 * @return Στο spinner του Κλάδου των Ενόπλων Δυνάμεων, είναι επιλεγμένος ο ΕΣ */
+	private boolean isArmy() { return ((Spinner) findViewById(R.id.spArmType)).getSelectedItemPosition() == 0; }
+
+	/** Κοινός κώδικας που δημιουργεί τον ArrayAdapter του spinner του ΦΠΑ, κρατήσεων και ΦΕ.
+	 * @param array Το array κρατήσεων, ΦΕ ή ΦΠΑ που θα περιέχει ο adapter
+	 * @return Ο adapter */
+	private ArrayAdapter createAdapter(Object[] array) {
+		ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_spinner_item,
 				new ArrayList<>(Arrays.asList(array)));
+		adapter.add("Άλλο");
 		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		return adapter;
 	}
@@ -216,9 +286,14 @@ public class MainActivity extends Activity {
 		return super.onOptionsItemSelected(item);
 	}
 
-	private void setFEInfo(AdapterView s) {
-		if (s == findViewById(R.id.spFE)) {
-			String [] ar = getResources().getStringArray(R.array.FEInfo);
+	/** Εμφανίζει πληροφορίες σε ένα TextView, σχετικές με το ποσοστό ΦΕ του τιμολογίου.
+	 * Η κλήση εκτελείται όταν τροποποιούνται οι κρατήσεις, το ΦΠΑ ή το ΦΕ. Αν τροποποιείται το ΦΕ,
+	 * για το νέο ΦΕ εμφανίζει πληροφορίες σχετικά με το ΦΕ. Σε κάθε περίπτωση, επανυπολογίζονται τα
+	 * ποσά του τιμολογίου.
+	 * @param s Το μενού στο οποίο άλλαξε η επιλογή. Είναι είτε το μενού κρατήσεων, είτε ΦΠΑ, είτε ΦΕ. */
+	private void setIncomeTaxInfo(AdapterView s) {
+		if (s == findViewById(R.id.spIncomeTax)) {
+			String [] ar = getResources().getStringArray(R.array.IncomeTaxInfo);
 			int sel = s.getSelectedItemPosition();
 			String txt = sel < ar.length ? ar[sel] : "";
 			((TextView) findViewById(R.id.tvFEInfo)).setText(txt);
@@ -228,15 +303,17 @@ public class MainActivity extends Activity {
 
 	@Override
 	public void onStop() {
+		// Αποθήκευση των στοιχείων του παραθύρου
 		SharedPreferences.Editor edit = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit();
 		edit.putInt(CONTRACTOR, ((Spinner) findViewById(R.id.spContractorType)).getSelectedItemPosition());
 		edit.putInt(AMOUNT_TYPE, ((Spinner) findViewById(R.id.spAmountType)).getSelectedItemPosition());
 		edit.putInt(INVOICE_TYPE, ((Spinner) findViewById(R.id.spInvoiceType)).getSelectedItemPosition());
+		edit.putInt(ARM_TYPE, ((Spinner) findViewById(R.id.spArmType)).getSelectedItemPosition());
 		edit.putBoolean(AUTOMATIC, ((Switch) findViewById(R.id.swAuto)).isChecked());
 		edit.putInt(FINANCING_TYPE, ((Spinner) findViewById(R.id.spFinancingType)).getSelectedItemPosition());
 		edit.putBoolean(CONSTRUCTION, ((CheckBox) findViewById(R.id.cbConstruction)).isChecked());
-		edit.putInt(FPA, ((Spinner) findViewById(R.id.spFPA)).getSelectedItemPosition());
-		edit.putInt(FE, ((Spinner) findViewById(R.id.spFE)).getSelectedItemPosition());
+		edit.putInt(VAT, ((Spinner) findViewById(R.id.spVAT)).getSelectedItemPosition());
+		edit.putInt(INCOME_TAX, ((Spinner) findViewById(R.id.spIncomeTax)).getSelectedItemPosition());
 		edit.putInt(HOLDS, ((Spinner) findViewById(R.id.spHolds)).getSelectedItemPosition());
 		String s = ((EditText) findViewById(R.id.txtAmount)).getText().toString();
 		edit.putFloat(AMOUNT, s.isEmpty() ? 0 : Float.parseFloat(s));
@@ -244,7 +321,14 @@ public class MainActivity extends Activity {
 		super.onStop();
 	}
 
-	// Εύρεση καθαρής αξίας
+	/** Υπολογισμός της καθαρής αξίας όταν δίνεται καταλογιστέο, πληρωτέο ή υπόλοιπο πληρωτέο.
+	 * @param contractor Ο τύπος του εκδότη του τιμολογίου
+	 * @param amountType Ο τύπος του ποσού (καθαρή αξία, καταλογιστέο, πληρωτέο, υπόλοιπο πληρωτέο)
+	 * @param amount Το ποσό
+	 * @param fpa Το ποσοστό ΦΠΑ
+	 * @param holds Το ποσοστό κρατήσεων
+	 * @param fe Το ποσοστό ΦΕ
+	 * @return Η καθαρή αξία του τιμολογίου */
 	static private double calculateNet(int contractor, int amountType, double amount, double fpa,
 									   double holds, double fe) {
 		switch(contractor) {
@@ -274,56 +358,69 @@ public class MainActivity extends Activity {
 		return Math.round(amount * 100.0) / 100.0;
 	}
 
-	// Υπολογισμός κρατήσεων
-	static private Hold calculateHold(int contractor, int invoiceType, int financing, double net) {
+	/** Αυτοματοποιημένος υπολογισμός ποσοστού κρατήσεων του τιμολογίου για το Στρατό.
+	 * @param contractor Ο τύπος του εκδότη του τιμολογίου
+	 * @param invoiceType Ο τύπος του τιμολογίου
+	 * @param financing Ο τύπος της χρηματοδότησης
+	 * @param net Η καθαρή αξία του τιμολογίου
+	 * @return Οι κρατήσεις του τιμολογίου */
+	static private Hold calculateHoldArmy(int contractor, int invoiceType, int financing, double net) {
 		Hold hold;
-		if (invoiceType == 4 /*Λογαριασμοί νερού/ΔΕΗ*/) hold = holdList[0];
+		if (invoiceType == 4 /*Λογαριασμοί νερού/ΔΕΗ*/) hold = holdListArmy[0];
 		else if (contractor == 0 /*Ιδιώτης*/) {
 			if (invoiceType == 3 /*Μισθώματα ακινήτων*/)
 				switch(financing) {
-					case 0: /*Τακτικός Π/Υ*/ hold = holdList[2]; break;
-					case 1: /*Ιδιοι πόροι*/ hold = holdList[13]; break;
-					default: /*case 2: Π/Υ ΠΔΕ*/ hold = holdList[0];
+					case 0: /*Τακτικός Π/Υ*/ hold = holdListArmy[2]; break;
+					case 1: /*Ιδιοι πόροι*/ hold = holdListArmy[13]; break;
+					default: /*case 2: Π/Υ ΠΔΕ*/ hold = holdListArmy[0];
 				}
-			else if (net >= 2500)
+			else if (net >= PRICE_HOLD_CONTRACT)
 				switch(financing) {
 					case 0: /*Τακτικός Π/Υ*/
-						hold = holdList[invoiceType >= 5 /*Εκπόνηση/Επίβλεψη μελετών*/ ? 6 : 5];
+						hold = holdListArmy[invoiceType >= 5 /*Εκπόνηση/Επίβλεψη μελετών*/ ? 6 : 5];
 						break;
 					case 1: /*Ιδιοι πόροι*/
-						hold = holdList[invoiceType >= 5 /*Εκπόνηση/Επίβλεψη μελετών*/ ? 17 : 16];
+						hold = holdListArmy[invoiceType >= 5 /*Εκπόνηση/Επίβλεψη μελετών*/ ? 17 : 16];
 						break;
 					default: /*case 2: Π/Υ ΠΔΕ*/
-						hold = holdList[invoiceType >= 5 /*Εκπόνηση/Επίβλεψη μελετών*/ ? 10 : 9];
+						hold = holdListArmy[invoiceType >= 5 /*Εκπόνηση/Επίβλεψη μελετών*/ ? 10 : 9];
 				}
 			else
 				switch(financing) {
 					case 0: /*Τακτικός Π/Υ*/
-						hold = holdList[invoiceType >= 5 /*Εκπόνηση/Επίβλεψη μελετών*/ ? 4 : 3];
+						hold = holdListArmy[invoiceType >= 5 /*Εκπόνηση/Επίβλεψη μελετών*/ ? 4 : 3];
 						break;
 					case 1: /*Ιδιοι πόροι*/
-						hold = holdList[invoiceType >= 5 /*Εκπόνηση/Επίβλεψη μελετών*/ ? 15 : 14];
+						hold = holdListArmy[invoiceType >= 5 /*Εκπόνηση/Επίβλεψη μελετών*/ ? 15 : 14];
 						break;
 					default: /*case 2: Π/Υ ΠΔΕ*/
-						hold = holdList[invoiceType >= 5 /*Εκπόνηση/Επίβλεψη μελετών*/ ? 8 : 7];
+						hold = holdListArmy[invoiceType >= 5 /*Εκπόνηση/Επίβλεψη μελετών*/ ? 8 : 7];
 				}
 			// contractor: 1:ΝΠΔΔ 2:Στρατος
-		} else hold = holdList[financing == 1 /*Ιδιοι πόροι*/ ? 12 : 1];
+		} else hold = holdListArmy[financing == 1 /*Ιδιοι πόροι*/ ? 12 : 1];
 		return hold;
 	}
 
-	// Όλο το πρόγραμμα εδώ!
+	/** Η καθαρή αξία πάνω από την οποία έχουμε σύμβαση. */
+	static final private int PRICE_CONTRACT = 2500;
+	/** Η καθαρή αξία πάνω από την οποία οι κρατήσεις προσαυξάνονται. */
+	static final private int PRICE_HOLD_CONTRACT = 1000;
+	/** Η καθαρή αξία κάτω από την οποία δεν έχουμε ΦΕ. */
+	static final private int PRICE_INCOME_TAX = 150;
+
+	/** Το υπολογιστικό τμήμα του προγράμματος. */
 	private void calculation() {
 		try {
 			// Λήψη όλων των απαραίτητων δεδομένων για τους υπολογισμούς
 			int contractor = ((Spinner) findViewById(R.id.spContractorType)).getSelectedItemPosition();
 			int amountType = ((Spinner) findViewById(R.id.spAmountType)).getSelectedItemPosition();
 			int invoiceType = ((Spinner) findViewById(R.id.spInvoiceType)).getSelectedItemPosition();
-			boolean auto = ((CompoundButton) findViewById(R.id.swAuto)).isChecked();
+			boolean army = isArmy();
+			boolean auto = isAuto();
 			CompoundButton cbConstruction = findViewById(R.id.cbConstruction);
 			boolean construction = cbConstruction.isChecked();
 			double amount = Double.parseDouble(((EditText) (findViewById(R.id.txtAmount))).getText().toString());
-			double fpaPercent = Double.parseDouble(((Spinner) findViewById(R.id.spFPA)).getSelectedItem().toString()) / 100.0;
+			double fpaPercent = Double.parseDouble(((Spinner) findViewById(R.id.spVAT)).getSelectedItem().toString()) / 100.0;
 			double fePercent;
 			Hold hold;
 
@@ -331,6 +428,9 @@ public class MainActivity extends Activity {
 			// Το πρόβλημα εδώ είναι ότι δεν ξέρουμε την καθαρή αξία!
 			// Για το λόγο αυτό κάποιοι έλεγχοι θα γίνουν μεταγενέστερα.
 			if (auto) {
+				// Για την ΠΑ οι αυτόματοι υπολογισμοί δεν είναι έτοιμοι
+				if (!army) throw new NumberFormatException();
+
 				Spinner spFinancingType = findViewById(R.id.spFinancingType);
 				int financing = spFinancingType.getSelectedItemPosition();
 
@@ -358,21 +458,21 @@ public class MainActivity extends Activity {
 				else if (invoiceType == 6 /*Επίβλεψη μελέτης*/) fePercent = 0.1;
 				else fePercent = 0.04; /*invoiceType: 4:Προμήθεια υλικών ή 5:Εκπόνηση μελέτης*/
 
-				// Υπολογισμός κρατήσεων, αρχικά θεωρώντας την καθαρή αξία >= 2500
-				hold = calculateHold(contractor, invoiceType, financing, 2500.001); // truncation prediction
+				// Υπολογισμός κρατήσεων, αρχικά θεωρώντας την καθαρή αξία >= PRICE_HOLD_CONTRACT
+				hold = calculateHoldArmy(contractor, invoiceType, financing, PRICE_HOLD_CONTRACT + 0.001); // truncation prediction
 				// Εύρεση καθαρής αξίας
 				double net = calculateNet(contractor, amountType, amount, fpaPercent, hold.total, 0);
-				// Αν καθαρή αξία < 2500, επανυπολογισμός κρατήσεων και καθαρής αξίας
-				if (net < 2500) {
-					hold = calculateHold(contractor, invoiceType, financing, net);
+				// Αν καθαρή αξία < PRICE_HOLD_CONTRACT, επανυπολογισμός κρατήσεων και καθαρής αξίας
+				if (net < PRICE_HOLD_CONTRACT) {
+					hold = calculateHoldArmy(contractor, invoiceType, financing, net);
 					net = calculateNet(contractor, amountType, amount, fpaPercent, hold.total, 0);
 				}
-				// Αν καθαρή αξία <= 150 και δεν έχουμε κατασκευή, το ΦΕ είναι 0
-				if (!construction && net <= 150) fePercent = 0;
+				// Αν καθαρή αξία <= PRICE_INCOME_TAX και δεν έχουμε κατασκευή, το ΦΕ είναι 0
+				if (!construction && net <= PRICE_INCOME_TAX) fePercent = 0;
 			} else {
 				// Εύρεση κρατήσεων και ΦΕ
 				hold = (Hold) ((Spinner) findViewById(R.id.spHolds)).getSelectedItem();
-				fePercent = Double.parseDouble(((Spinner) findViewById(R.id.spFE)).getSelectedItem().toString()) / 100.0;
+				fePercent = Double.parseDouble(((Spinner) findViewById(R.id.spIncomeTax)).getSelectedItem().toString()) / 100.0;
 			}
 			// Εύρεση καθαρής αξίας
 			amount = calculateNet(contractor, amountType, amount, fpaPercent, hold.total, fePercent);
@@ -400,7 +500,7 @@ public class MainActivity extends Activity {
 			txt.append(String.format(getString(R.string.resMixed),
 					df2.format(mixed), txtHolds, df2.format(final1)));
 			if (contractor == 0 /* Ιδιώτης */ && fePercent > 0)
-				txt.append(String.format(getString(R.string.resFE),
+				txt.append(String.format(getString(R.string.resIncomeTax),
 						df.format(fePercent), df2.format(fe), df2.format(final2)));
 			((TextView) findViewById(R.id.tvResults)).setText(txt);
 			// Εξαγωγή απαιτούμενων
@@ -409,9 +509,9 @@ public class MainActivity extends Activity {
 				if (mixed > 1500) txt.append(getString(R.string.reqTaxCurrency)).append("\n");
 				if (mixed > 3000) txt.append(getString(R.string.reqInsuranceCurrency)).append("\n");
 				//if (amount > 2500) txt.append(getString(R.string.reqInsuranceCurrency)).append("\n");
-				if (amount > 2500) txt.append(getString(R.string.reqCriminalRecord)).append("\n");
+				if (amount > PRICE_CONTRACT) txt.append(getString(R.string.reqCriminalRecord)).append("\n");
 			}
-			if (contractor != 2 /* όχι Στρατός */ && (amount > 2500 || construction && auto))
+			if (contractor != 2 /* όχι Στρατός */ && (amount > PRICE_CONTRACT || construction && auto))
 				txt.append(getString(R.string.reqContract)).append("\n");
 			if (amount > 60000) txt.append(getString(R.string.reqCompetitionFormal)).append("\n");
 			else if (amount > 20000) txt.append(getString(R.string.reqCompetitionInformal)).append("\n");
@@ -426,7 +526,7 @@ public class MainActivity extends Activity {
 			txt = new StringBuilder(4096);
 			if (hold.data != null) {
 				double[] holdsAll = hold.euro(holds);
-				String[] txtHoldsAll = getResources().getStringArray(R.array.hldParts);
+				String[] txtHoldsAll = getResources().getStringArray(army ? R.array.hldPartsArmy : R.array.hldPartsAirForce);
 				String str = getString(R.string.hldPart);
 				txt.append(String.format(str, getString(R.string.hldTotal), df.format(hold.total),
 						df2.format(holds)));
@@ -444,39 +544,57 @@ public class MainActivity extends Activity {
 		}
 	}
 
+	/** Λίστα με όλες τις κρατήσεις στο Στρατό. */
 	//                             ΜΤΣ,     Χαρτόσημο,ΟΓΑ,       ΕΑΑΔΗΣΥ,ΑΕΠΠ,   ΒΑΜ,  ΕΚΟΕΜΣ
-	final static private Hold[] holdList = {
+	final static private Hold[] holdListArmy = {
 	/*0*/	new Hold(new double[0]),															// 0 - Λογαριασμοί νερού, έργα ΔΕΗ
 	/*1*/	new Hold(new double[] {0.03904, 0.0008,   0.00016}),								// 4 - Προμήθεια από Πρατήριο ή ΝΠΔΔ
 	/*2*/	new Hold(new double[] {0.04,    0.0008,   0.00016}),								// 4.096 - Μισθώματα ακινήτων
 			// ΤΑΚΤΙΚΟΣ Π/Υ
-			// Καθαρή αξία < 2500
+			// Καθαρή αξία < 1000
 	/*3*/	new Hold(new double[] {0.04,    0.000818, 0.0001636, 0,      0.0006}), 				// 4.15816
 	/*4*/	new Hold(new double[] {0.04,    0.002818, 0.0001636, 0,      0.0006}), 				// 4.35816 - Αμοιβές μελετητών
-			// Καθαρή αξία >= 2500
+			// Καθαρή αξία >= 1000
 	/*5*/	new Hold(new double[] {0.04,    0.000839, 0.0001678, 0.0007, 0.0006}), 				// 4.23068
 	/*6*/	new Hold(new double[] {0.04,    0.002839, 0.0001678, 0.0007, 0.0006}), 				// 4.43068 - Αμοιβές μελετητών
 			// Π/Υ ΠΔΕ
-			// Καθαρή αξία < 2500
+			// Καθαρή αξία < 1000
 	/*7*/	new Hold(new double[] {0,       0.000018, 0.0000036, 0,      0.0006}),				// 0.06216
 	/*8*/	new Hold(new double[] {0,       0.002018, 0.0000036, 0,      0.0006}),				// 0.26216 - Αμοιβές μελετητών
-			// Καθαρή αξία >= 2500
+			// Καθαρή αξία >= 1000
 	/*9*/	new Hold(new double[] {0,       0.000039, 0.0000078, 0.0007, 0.0006}),				// 0.13468
 	/*10*/	new Hold(new double[] {0,       0.002039, 0.0000078, 0.0007, 0.0006}),				// 0.33468 - Αμοιβές μελετητών
 			// ΙΔΙΟΙ ΠΟΡΟΙ
 	/*11*/	new Hold(new double[] {0,       0,        0,         0,      0,      0.02, 0.08}),	// 10 - Λέσχες
 	/*12*/	new Hold(new double[] {0.03904, 0.0008,   0.00016,   0,      0,      0.02, 0.08}),	// 14 - Προμήθεια από Πρατήριο ή ΝΠΔΔ
 	/*13*/	new Hold(new double[] {0.04,	0.0008,   0.00016,   0,	     0,      0.02, 0.08}),	// 14.096 - Μισθώματα ακινήτων
-			// Καθαρή αξία < 2500
+			// Καθαρή αξία < 1000
 	/*14*/	new Hold(new double[] {0.04,    0.000818, 0.0001636, 0,      0.0006, 0.02, 0.08}),	// 14.15816
 	/*15*/	new Hold(new double[] {0.04,    0.002818, 0.0001636, 0,      0.0006, 0.02, 0.08}),	// 14.35816 - Αμοιβές μελετητών
-			// Καθαρή αξία >= 2500
+			// Καθαρή αξία >= 1000
 	/*16*/	new Hold(new double[] {0.04,	0.000839, 0.0001678, 0.0007, 0.0006, 0.02, 0.08}),	// 14.23068
 	/*17*/	new Hold(new double[] {0.04,    0.002839, 0.0001678, 0.0007, 0.0006, 0.02, 0.08}),	// 14.43068 - Αμοιβές μελετητών
 	};
 
+	/** Λίστα με όλες τις κρατήσεις στην Αεροπορία. */
+	//                             ΜΤΑ, ΕΛΟΑΑ Χαρτόσημο,ΟΓΑ,       ΕΑΑΔΗΣΥ,ΑΕΠΠ
+	final static private Hold[] holdListAirForce = {
+	/*0*/	holdListArmy[0],			        										// 0 - Λογαριασμοί νερού, έργα ΔΕΗ
+	/*1*/	new Hold(new double[] {0.04, 0.02, 0.001239, 0.0002478, 0.0007, 0.0006}),   // 6.27868 - Καθαρή αξία >= 1000
+	/*2*/	new Hold(new double[] {0.04, 0.02, 0.001218, 0.0002436, 0,      0.0006}),   // 6.20616 - Καθαρή αξία < 1000
+			// Ανάγκες τροφοδοσίας και ατομικής καθαριότητας μαθητών/οπλιτών
+	/*3*/	holdListArmy[7],                                                           	// 0.06216 - Καθαρή αξία < 1000
+	/*4*/	holdListArmy[9]                                                         	// 0.13468 - Καθαρή αξία >= 1000
+	};
+
+	/** Κράτηση. */
 	static private class Hold {
+		/** Δημιουργία μιας κράτησης, σαν σύνολο, χωρίς επιμέρους κρατήσεις.
+		 * @param sum Το σύνολο της κράτησης */
 		Hold(double sum) { data = null; total = sum / 100; }
+		/** Δημιουργία μιας κράτησης, με τις επιμέρους κρατήσεις.
+		 * @param holds Οι επιμέρους κρατήσεις, χωρίς το σύνολο (που υπολογίζεται), με τη σειρά που
+		 * εμφανίζονται τα ονόματά τους στο string array */
 		Hold(double[] holds) {
 			data = holds;
 			double sum = 0;
@@ -488,6 +606,9 @@ public class MainActivity extends Activity {
 			if (o instanceof Hold) return ((Hold) o).total == total;
 			return o instanceof Number && ((Number) o).doubleValue() == total;
 		}
+		/** Οι επιμέρους κρατήσεις σε €.
+		 * @param holds Το συνολικό ποσό των κρατήσεων σε €
+		 * @return Οι επιμέρους κρατήσεις σε €, διορθωμένες ώστε να έχουν άθροισμα το συνολικό ποσό */
 		double[] euro(double holds) {
 			if (data == null) return null;
 			double euroTotal = 0, euroData[] = new double[data.length];
@@ -524,7 +645,9 @@ public class MainActivity extends Activity {
 			}
 			return euroData;
 		}
+		/** Το συνολικό ποσοστό των κρατήσεων. */
 		final double total;
+		/** Τα ποσοστά των επιμέρους κρατήσεων. Το άθροισμά τους είναι ίσο με το συνολικό ποσοστό. */
 		final private double[] data;
 	}
 }
