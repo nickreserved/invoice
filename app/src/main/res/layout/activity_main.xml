@@ -86,32 +86,13 @@
 
         </RelativeLayout>
 
-	    <TextView
-		    android:layout_width="wrap_content"
-		    android:layout_height="wrap_content"
-		    android:text="@string/arm"
-		    android:id="@+id/tvArm"
-		    android:textAppearance="@android:style/TextAppearance.Widget.TextView"
-		    android:labelFor="@+id/spArmType"
-		    android:layout_below="@id/layVAT"
-		    android:layout_marginTop="@dimen/module_vertical_margin" />
-
-	    <Spinner
-		    android:layout_width="wrap_content"
-		    android:layout_height="wrap_content"
-		    android:id="@+id/spArmType"
-		    android:entries="@array/armType"
-		    android:layout_alignBaseline="@id/tvArm"
-		    android:layout_toEndOf="@id/tvArm"
-		    android:layout_toRightOf="@id/tvArm" />
-
 	    <Switch
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/automatic"
             android:id="@+id/swAuto"
             android:checked="true"
-            android:layout_below="@+id/spArmType"
+            android:layout_below="@+id/layVAT"
             android:layout_marginTop="@dimen/module_vertical_margin" />
 
         <TextView

@@ -1,5 +1,6 @@
 <resources>
-    <string name="app_name">Τιμολόγιο Δαπάνης ΕΣ &amp; ΠΑ</string>
+    <string name="app_name">Τιμολόγιο Δαπάνης Στρατού</string>
+	<string name="app_name2">Τιμολόγιο Δαπάνης Αεροπορίας</string>
     <string name="about">Σχετικά</string>
     <string name="aboutInfo">Υπολογισμός στοιχείων τιμολογίου για δαπάνη Στρατού &amp; Αεροπορίας\n\nΠαύλος Γκέσος (ΣΣΕ 2002)\nΈκδοση %1$d</string>
 	<string name="web">Ιστοσελίδα</string>
@@ -14,11 +15,9 @@
     <string name="IncomeTax">ΦΕ (%)</string>
 
 	<string name="arm">Κλάδος ΕΔ</string>
-	<string-array name="armType">
-		<item>ΕΣ</item>
-		<item>ΠΑ</item>
-	</string-array>
-	<string name="tvAirForceWarning">Βοηθήστε να υποστηριχθούν δαπάνες έργων, δαπάνες με χρηματοδότηση ιδίων πόρων, δαπάνες προμήθειας από πρατήρια των ΕΔ, δαπάνες μελετητών και δαπάνες μίσθωσης ακινήτων.</string>
+	<string name="armArmy">Στρατός</string>
+	<string name="armAirForce">Αεροπορία</string>
+	<string name="tvAirForceWarning">Υποστηρίζεται μόνο μια μικρή μειοψηφία δαπανών. Βοηθήστε για την επέκταση του προγράμματος.</string>
 
 	<string name="tvFinancing">Χρηματοδότηση</string>
     <string name="tvInvoiceType">Τύπος τιμολογίου</string>

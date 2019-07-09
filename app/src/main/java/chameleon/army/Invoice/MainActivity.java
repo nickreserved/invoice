@@ -98,6 +98,9 @@ public class MainActivity extends Activity {
 	/** Κλειδί αποθήκευσης για τον κλάδο των Ενόπλων Δυνάμεων. */
 	static private final String ARM_TYPE = "Κλάδος";
 
+	/** Ο χρήστης είναι της Πολεμικής Αεροπορίς. */
+	private boolean airforce;
+
 	// Αρχικοποίηση του Activity
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -157,6 +160,10 @@ public class MainActivity extends Activity {
 			@Override public void onNothingSelected(AdapterView<?> parentView) {}
 		};
 
+		// Πρόγραμμα σε κατάσταση Πολεμικής Αεροπορίας ή Ελληνικού Στρατού
+		//TODO: Αφαίρεση του try-catch μετά το 2021
+		try { setMode(pref.getBoolean(ARM_TYPE, false)); }
+		catch(ClassCastException ex) { setMode(pref.getInt(ARM_TYPE, 0) == 1); }
 		// Αρχικοποίηση spinner ΦΠΑ
 		Spinner spinner = findViewById(R.id.spVAT);
 		spinner.setAdapter(createAdapter(VAT_DATA));
@@ -170,46 +177,11 @@ public class MainActivity extends Activity {
 		a = pref.getInt(INCOME_TAX, 0);
 		spinner.setSelection(a >= 0 && a < INCOME_TAX_DATA.length ? a : 0);
 		setIncomeTaxInfo(spinner);
-		// Αρχικοποίηση spinner για τον κλάδο των ΕΔ
-		spinner = findViewById(R.id.spArmType);
-		a = pref.getInt(ARM_TYPE, 0);
-		spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-			@Override public void onItemSelected(final AdapterView<?> parentView, View selectedItemView, int position, long id) {
-				// Αρχικοποίηση spinner κρατήσεων
-				boolean army = position == 0;
-				Hold[] holdList = army ? holdListArmy : holdListAirForce;
-				ArrayAdapter adapter = createAdapter(holdList);
-				Spinner spinner = findViewById(R.id.spHolds);
-				int a = spinner.getSelectedItemPosition();
-				spinner.setAdapter(adapter);
-				// Επειδή κατά την αρχικοποίηση τρέχει, χαλάει την επιλογή που μόλις έχει φορτωθεί
-				// με αποτέλεσμα να φαίνεται επιλεγμένη πάντα η πρώτη κράτηση, κρατάμε την υπάρχουσα
-				// επιλεγμένη θέση (αν υπάρχει)
-				spinner.setSelection(a < adapter.getCount() ? a : 0);
-				if (isAuto()) guiDisplay(army);
-				//TODO: Αν είναι αεροπορία, δε χρειάζονται components για έργο ΜΧ
-				findViewById(R.id.cbConstruction).setVisibility(army ? View.VISIBLE : View.GONE);
-				// Στο είδος τιμολογίου, προστίθεται άλλη μια επιλογή αν είναι αεροπορία
-				adapter = new ArrayAdapter(
-						MainActivity.this, android.R.layout.simple_spinner_item,
-						getResources().getTextArray(
-								army ? R.array.InvoiceTypeArmy : R.array.InvoiceTypeAirForce));
-				adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-				((Spinner) findViewById(R.id.spInvoiceType)).setAdapter(adapter);
-				calculation();
-			}
-			@Override public void onNothingSelected(AdapterView<?> parentView) {}
-		});
-		spinner.setSelection(a < spinner.getCount() ? a : 0);
-		boolean army = a == 0;
-		// Αρχικοποίηση spinner κρατήσεων
-		Hold[] holdList = army ? holdListArmy : holdListAirForce;
-		ArrayAdapter adapter = createAdapter(holdList);
+		// Αρχικοποίηση spinner κρατήσεων (αρχικοποιείται στο setMode())
 		spinner = findViewById(R.id.spHolds);
-		spinner.setAdapter(adapter);
 		spinner.setOnItemSelectedListener(listener);
 		a = pref.getInt(HOLDS, 0);
-		spinner.setSelection(a < holdList.length ? a : 0);
+		spinner.setSelection(a < spinner.getAdapter().getCount() ? a : 0);
 		// Αρχικοποίηση spinner προμηθευτή
 		spinner = findViewById(R.id.spContractorType);
 		a = pref.getInt(CONTRACTOR, 0);
@@ -223,7 +195,7 @@ public class MainActivity extends Activity {
 				// Αν είναι στρατός, δε χρειάζονται components για ΦΠΑ
 				findViewById(R.id.layVAT).setVisibility(position == 2 /* Στρατός */ ? View.GONE : View.VISIBLE);
 				// Αν δεν είναι ιδιώτης, δε χρειάζονται components για έργο ΜΧ
-				findViewById(R.id.cbConstruction).setVisibility(position != 0 /* Όχι ιδιώτης */ ? View.GONE : View.VISIBLE);
+				findViewById(R.id.cbConstruction).setVisibility(position != 0 /* Όχι ιδιώτης */ || airforce ? View.GONE : View.VISIBLE);
 				// Αν είναι στρατός, δε χρειάζονται components για το είδος τιμολογίου
 				findViewById(R.id.layInvoiceType).setVisibility(position == 2 /* στρατός */ ? View.GONE : View.VISIBLE);
 				// Επανυπολογισμός
@@ -257,15 +229,16 @@ public class MainActivity extends Activity {
 			@Override public void onTextChanged(CharSequence s, int start, int before, int count) {}
 		});
 		float b = pref.getFloat(AMOUNT, 0);
-		if (b > 0) editText.setText(Float.toString(b));
-		spinner.setSelection(pref.getInt(ARM_TYPE, 0));
+		if (b > 0) editText.setText(Float.toString(b).replace(".0", ""));
 		// Αρχικοποίηση compound button για τον αυτόματο υπολογισμό
 		CompoundButton checkBox = findViewById(R.id.swAuto);
 		checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
 			if (isChecked) {
 				findViewById(R.id.layAdvanced).setVisibility(View.GONE);
 				findViewById(R.id.layAutomatic).setVisibility(View.VISIBLE);
-				guiDisplay(army);
+				// Το επεξηγηματικό κείμενο του κομβίου αυτόματου υπολογισμού
+				((TextView) findViewById(R.id.tvAutoInfo)).setText(getString(
+						airforce ? R.string.tvAirForceWarning : R.string.tvAutoOn));
 			} else {
 				findViewById(R.id.layAdvanced).setVisibility(View.VISIBLE);
 				findViewById(R.id.layAutomatic).setVisibility(View.GONE);
@@ -280,19 +253,39 @@ public class MainActivity extends Activity {
 		checkBox.setChecked(pref.getBoolean(CONSTRUCTION, false));
 	}
 
-	private void guiDisplay(boolean army) {
+	/** Θέτει τη λειτουργία του προγράμματος για Στρατό ή Αεροπορία.
+	 * Τροποποιεί το spinner των κρατήσεων, το επεξηγηματικό κείμενο του αυτόματου υπολογισμού, το
+	 * αν η δαπάνη είναι έργο ή όχι, τις κατηγορίες τιμολογίου και κάνει επανυπολογισμό.
+	 * @param airforce Το πρόγραμμα τίθεται σε λειτουργία Αεροπορίας */
+	private void setMode(boolean airforce) {
+		// Τίθεται η μεταβλητή
+		this.airforce = airforce;
+		// Οι συνέπειες της μεταβλητής
+		Hold[] holdList = airforce ? holdListAirForce : holdListArmy;
+		ArrayAdapter adapter = createAdapter(holdList);
+		Spinner spinner = findViewById(R.id.spHolds);
+		spinner.setAdapter(adapter);
 		// Το επεξηγηματικό κείμενο του κομβίου αυτόματου υπολογισμού
-		((TextView) findViewById(R.id.tvAutoInfo)).setText(getString(
-				army ? R.string.tvAutoOn : R.string.tvAirForceWarning));
+		if (isAuto())
+			((TextView) findViewById(R.id.tvAutoInfo)).setText(getString(
+					airforce ? R.string.tvAirForceWarning : R.string.tvAutoOn));
+		// Ο τίτλος του προγράμματος
+		setTitle(airforce ? R.string.app_name2 : R.string.app_name);
+		// Αν είναι αεροπορία, δε χρειάζονται components για έργο ΜΧ
+		findViewById(R.id.cbConstruction).setVisibility(airforce ? View.GONE : View.VISIBLE);
+		// Τα είδη τιμολογίου, είναι διαφορετικά στο Στρατό και στην Αεροπορία
+		adapter = new ArrayAdapter(
+				MainActivity.this, android.R.layout.simple_spinner_item,
+				getResources().getTextArray(
+						airforce ? R.array.InvoiceTypeAirForce : R.array.InvoiceTypeArmy));
+		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		((Spinner) findViewById(R.id.spInvoiceType)).setAdapter(adapter);
+		calculation();
 	}
 
 	/** Ο αυτόματος υπολογισμός είναι ενεργός.
 	 * @return Ο αυτόματος υπολογισμός είναι ενεργός */
 	private boolean isAuto() { return ((CompoundButton) findViewById(R.id.swAuto)).isChecked(); }
-
-	/** Στο spinner του Κλάδου των Ενόπλων Δυνάμεων, είναι επιλεγμένος ο ΕΣ.
-	 * @return Στο spinner του Κλάδου των Ενόπλων Δυνάμεων, είναι επιλεγμένος ο ΕΣ */
-	private boolean isArmy() { return ((Spinner) findViewById(R.id.spArmType)).getSelectedItemPosition() == 0; }
 
 	/** Κοινός κώδικας που δημιουργεί τον ArrayAdapter του spinner του ΦΠΑ, κρατήσεων και ΦΕ.
 	 * @param array Το array κρατήσεων, ΦΕ ή ΦΠΑ που θα περιέχει ο adapter
@@ -314,16 +307,24 @@ public class MainActivity extends Activity {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		int id = item.getItemId();
-		if (id == R.id.action_about) {
-			new AlertDialog.Builder(this)
-					.setTitle(R.string.about)
-					.setMessage(String.format(getString(R.string.aboutInfo), BuildConfig.VERSION_CODE))
-					.setNeutralButton(android.R.string.ok, null)
-					.setCancelable(true)
-					.create().show();
-			return true;
+		switch(id) {
+			case R.id.action_about:     // Menu "Σχετικά"
+				new AlertDialog.Builder(this)
+						.setTitle(R.string.about)
+						.setMessage(String.format(getString(R.string.aboutInfo), BuildConfig.VERSION_CODE))
+						.setNeutralButton(android.R.string.ok, null)
+						.setCancelable(true)
+						.create().show();
+				return true;
+			case R.id.action_arm:       // Menu "Κλάδος ΕΔ"
+				new AlertDialog.Builder(this)
+						.setTitle(R.string.arm)
+						.setPositiveButton(R.string.armArmy, (dialog, which) -> setMode(false))
+						.setNeutralButton(R.string.armAirForce, (dialog, which) -> setMode(true))
+						.show();
+				return true;
+			default: return super.onOptionsItemSelected(item);
 		}
-		return super.onOptionsItemSelected(item);
 	}
 
 	/** Εμφανίζει πληροφορίες σε ένα TextView, σχετικές με το ποσοστό ΦΕ του τιμολογίου.
@@ -348,7 +349,7 @@ public class MainActivity extends Activity {
 		edit.putInt(CONTRACTOR, ((Spinner) findViewById(R.id.spContractorType)).getSelectedItemPosition());
 		edit.putInt(AMOUNT_TYPE, ((Spinner) findViewById(R.id.spAmountType)).getSelectedItemPosition());
 		edit.putInt(INVOICE_TYPE, ((Spinner) findViewById(R.id.spInvoiceType)).getSelectedItemPosition());
-		edit.putInt(ARM_TYPE, ((Spinner) findViewById(R.id.spArmType)).getSelectedItemPosition());
+		edit.putBoolean(ARM_TYPE, airforce);
 		edit.putBoolean(AUTOMATIC, ((Switch) findViewById(R.id.swAuto)).isChecked());
 		edit.putInt(FINANCING_TYPE, ((Spinner) findViewById(R.id.spFinancingType)).getSelectedItemPosition());
 		edit.putBoolean(CONSTRUCTION, ((CheckBox) findViewById(R.id.cbConstruction)).isChecked());
@@ -490,15 +491,14 @@ public class MainActivity extends Activity {
 	}
 
 	/** Αυτοματοποιημένος υπολογισμός ποσοστού κρατήσεων του τιμολογίου.
-	 * @param army Το τιμολόγιο είναι του Στρατού
 	 * @param contractor Ο τύπος του εκδότη του τιμολογίου
 	 * @param invoiceType Ο τύπος του τιμολογίου
 	 * @param financing Ο τύπος της χρηματοδότησης
 	 * @param net Η καθαρή αξία του τιμολογίου
 	 * @return Οι κρατήσεις του τιμολογίου */
-	static private Hold calculateHold(boolean army, int contractor, int invoiceType, int financing, double net) {
-		return army ? calculateHoldArmy(contractor, invoiceType, financing, net)
-				: calculateHoldAirForce(invoiceType, financing, net);
+	private Hold calculateHold(int contractor, int invoiceType, int financing, double net) {
+		return airforce ? calculateHoldAirForce(invoiceType, financing, net)
+				: calculateHoldArmy(contractor, invoiceType, financing, net);
 	}
 
 	/** Η καθαρή αξία πάνω από την οποία έχουμε σύμβαση. */
@@ -515,7 +515,6 @@ public class MainActivity extends Activity {
 			int contractor = ((Spinner) findViewById(R.id.spContractorType)).getSelectedItemPosition();
 			int amountType = ((Spinner) findViewById(R.id.spAmountType)).getSelectedItemPosition();
 			int invoiceType = ((Spinner) findViewById(R.id.spInvoiceType)).getSelectedItemPosition();
-			boolean army = isArmy();
 			boolean auto = isAuto();
 			CompoundButton cbConstruction = findViewById(R.id.cbConstruction);
 			boolean construction = cbConstruction.isChecked();
@@ -538,7 +537,7 @@ public class MainActivity extends Activity {
 				// Σε κατασκευαστικές δαπάνες, προμηθευτής είναι πάντα ιδιώτης
 				if (contractor != 0 /*Όχι ιδιώτης*/) construction = false;
 				// Σε τιμολόγιο αεροπορίας
-				if (!army) {
+				if (airforce) {
 					construction = false;               // δεν έχουμε κατασκευαστικές δαπάνες
 					// δεν υποστηρίζεται χρηματοδότηση ιδίων πόρων
 					if (financing == 1 /*Ίδιοι Πόροι*/) spFinancingType.setSelection(financing = 0);
@@ -555,7 +554,7 @@ public class MainActivity extends Activity {
 
 				// Υπολογισμός του ΦΕ
 				if (contractor != 0 /*Όχι ιδιώτης*/ || invoiceType == 3 /*Μίσθωση ακινήτου για Στρατό, Λογαριασμοί νερού - έργα ΔΕΗ για Αεροπορία*/
-						|| army && invoiceType == 4 /*Λογαριασμοί νερού - έργα ΔΕΗ*/) fePercent = 0;
+						|| !airforce && invoiceType == 4 /*Λογαριασμοί νερού - έργα ΔΕΗ*/) fePercent = 0;
 				// Μεταγενέστερα: if (!construction && net <= 150) fePercent = 0;
 				else if (invoiceType == 2 /*Προμήθεια υγρών καυσίμων*/) fePercent = 0.01;
 				else if (invoiceType == 1 /*Παροχή υπηρεσιών*/)
@@ -565,12 +564,12 @@ public class MainActivity extends Activity {
 
 				// Υπολογισμός κρατήσεων, αρχικά θεωρώντας την καθαρή αξία >= PRICE_HOLD_CONTRACT
 				// To +0.001 προστίθεται για να αποφευχθεί κάποια καταστροφική αποκοπή
-				hold = calculateHold(army, contractor, invoiceType, financing, PRICE_HOLD_CONTRACT + 0.001);
+				hold = calculateHold(contractor, invoiceType, financing, PRICE_HOLD_CONTRACT + 0.001);
 				// Εύρεση καθαρής αξίας
 				double net = calculateNet(contractor, amountType, amount, fpaPercent, hold.total, 0);
 				// Αν καθαρή αξία < PRICE_HOLD_CONTRACT, επανυπολογισμός κρατήσεων και καθαρής αξίας
 				if (net < PRICE_HOLD_CONTRACT) {
-					hold = calculateHold(army, contractor, invoiceType, financing, net);
+					hold = calculateHold(contractor, invoiceType, financing, net);
 					net = calculateNet(contractor, amountType, amount, fpaPercent, hold.total, 0);
 				}
 				// Αν καθαρή αξία <= PRICE_INCOME_TAX και δεν έχουμε κατασκευή, το ΦΕ είναι 0
@@ -632,7 +631,7 @@ public class MainActivity extends Activity {
 			txt = new StringBuilder(4096);
 			if (hold.data != null) {
 				double[] holdsAll = hold.euro(holds);
-				String[] txtHoldsAll = getResources().getStringArray(army ? R.array.hldPartsArmy : R.array.hldPartsAirForce);
+				String[] txtHoldsAll = getResources().getStringArray(airforce ? R.array.hldPartsAirForce : R.array.hldPartsArmy);
 				String str = getString(R.string.hldPart);
 				txt.append(String.format(str, getString(R.string.hldTotal), df.format(hold.total),
 						df2.format(holds)));
