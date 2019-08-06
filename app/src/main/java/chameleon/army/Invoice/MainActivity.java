@@ -623,7 +623,7 @@ public class MainActivity extends Activity {
 			if (amount > 20000) txt.append(getString(R.string.reqCriminalRecordDenial)).append("\n");
 			if (auto && construction && invoiceType == 1 /* Παροχή υπηρεσιών */)
 				txt.append(String.format(getString(R.string.reqConstructionContractor),
-						df2.format(amount * 0.01), df2.format(amount * 0.006)))
+						df2.format(amount * 0.01), df2.format(amount * 0.006), df2.format(amount * 0.0025)))
 						.append("\n");
 			if (txt.length() == 0) txt.append(getString(R.string.reqEmpty)).append("\n");
 			((TextView) findViewById(R.id.tvRequirements)).setText(txt.substring(0, txt.length() - 1));	// remove last newline
