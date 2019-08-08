@@ -30,7 +30,7 @@ public class MainActivity extends Activity {
 	/** Λίστα με τις τιμές του επιλογέα ΦΕ. */
 	static private final Object[] INCOME_TAX_DATA = { 4, 8, 3, 1, 10, 0 };
 	/** Λίστα με τις τιμές του επιλογέα ΦΠΑ. */
-	static private final Object[] VAT_DATA = { 24, 13, 6,    17, 9, 5,    13,    0 };
+	static private final Integer[] VAT_DATA = { 24, 13, 6,    17, 9, 5,    13,    0 };
 
 	/** Λίστα με όλες τις κρατήσεις στο Στρατό. */
 	//                             ΜΤΣ,     Χαρτόσημο,ΟΓΑ,       ΕΑΑΔΗΣΥ,ΑΕΠΠ,   ΒΑΜ,  ΕΚΟΕΜΣ
@@ -75,6 +75,11 @@ public class MainActivity extends Activity {
 	/*4*/	new Hold(new double[] {0,    0,    0.000039, 0.0000078, 0.0007, 0.0006}),	// 0.13468 - Καθαρή αξία >= 1000
 	};
 
+	/** Το πιο χρησιμοποιημένο ΦΠΑ. */
+	final static private int DEFAULT_VAT = 24;
+	/** Το πιο χρησιμοποιημένο ΦΕ. */
+	final static private int DEFAULT_INCOME_TAX = 4;
+
 	/** Κλειδί αποθήκευσης του είδους του προμηθευτή. */
 	static private final String CONTRACTOR = "Προμηθευτής";
 	/** Κλειδί αποθήκευσης του ποσοστού ΦΠΑ. */
@@ -98,7 +103,7 @@ public class MainActivity extends Activity {
 	/** Κλειδί αποθήκευσης για τον κλάδο των Ενόπλων Δυνάμεων. */
 	static private final String ARM_TYPE = "Κλάδος";
 
-	/** Ο χρήστης είναι της Πολεμικής Αεροπορίς. */
+	/** Ο χρήστης είναι της Πολεμικής Αεροπορίας. */
 	private boolean airforce;
 
 	// Αρχικοποίηση του Activity
@@ -106,7 +111,16 @@ public class MainActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+
+		// Φόρτωση δεδομένων, εντός try-catch για όσα δεδομένα αλλάζουν τύπο από έκδοση σε έκδοση
+		// γιατί αυτό οδηγεί σε ClassCastException
 		SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+		double valHolds = 0;
+		boolean valAirforce = false;
+		try {
+			valHolds = Double.longBitsToDouble(pref.getLong(HOLDS, 0));
+			valAirforce = pref.getBoolean(ARM_TYPE, false);
+		} catch(ClassCastException ex) {}
 
 		// Κοινός listener για spinner Κρατήσεων, ΦΠΑ και ΦΕ
 		AdapterView.OnItemSelectedListener listener = new AdapterView.OnItemSelectedListener() {
@@ -129,24 +143,19 @@ public class MainActivity extends Activity {
 								try {
 									// Μετατροπή της εισόδου σε αριθμό στο [0, 80]
 									String s = txtNum.getText().toString();
-									Number num = holds ? Double.parseDouble(s) : Integer.parseInt(s);
+									Number num;
+									// Αν το παρακάτω if γίνει =_?_:_, τότε το αποτέλεσμα γίνεται cast σε Double!
+									if (holds) num = Double.parseDouble(s) / 100;
+									else num = Integer.parseInt(s);
 									if (num.intValue() > 80) {    // Η είσοδος δεν είναι έγκυρος αριθμός
 										parentView.setSelection(0);
 										Toast.makeText(MainActivity.this, R.string.invalidValue, Toast.LENGTH_SHORT).show();
 										return;
 									}
-									// Αν ο αριθμός ήδη υπάρχει στη λίστα...
-									for (int z = 0; z < other; ++z)
-										if (parentView.getItemAtPosition(z).equals(num)) {
-											parentView.setSelection(z);	// ...τον επιλέγει
-											Toast.makeText(MainActivity.this, R.string.existedValue, Toast.LENGTH_SHORT).show();
-											return;
-										}
-									// ...ειδάλλως τον εισάγει
-									ArrayAdapter adapter = (ArrayAdapter) parentView.getAdapter();
-									adapter.insert(holds ? new Hold(num.doubleValue()) :  num.intValue(), other);
-									adapter.notifyDataSetChanged();
-									setIncomeTaxInfo(parentView);
+									// Επιλέγει τον αριθμό αν ήδη υπάρχει στη λίστα, ειδάλλως τον εισάγει
+									if (selectVal(parentView, num))
+										Toast.makeText(MainActivity.this, R.string.existedValue, Toast.LENGTH_SHORT).show();
+									else setIncomeTaxInfo(parentView);
 								} catch (NumberFormatException e) {}
 							})
 							.setNegativeButton(android.R.string.cancel, (dialog, whichButton) -> {
@@ -161,30 +170,24 @@ public class MainActivity extends Activity {
 		};
 
 		// Πρόγραμμα σε κατάσταση Πολεμικής Αεροπορίας ή Ελληνικού Στρατού
-		//TODO: Αφαίρεση του try-catch μετά το 2021
-		try { setMode(pref.getBoolean(ARM_TYPE, false)); }
-		catch(ClassCastException ex) { setMode(pref.getInt(ARM_TYPE, 0) == 1); }
+		setMode(valAirforce);
 		// Αρχικοποίηση spinner ΦΠΑ
 		Spinner spinner = findViewById(R.id.spVAT);
 		spinner.setAdapter(createAdapter(VAT_DATA));
+		selectVal(spinner, pref.getInt(VAT, DEFAULT_VAT));
 		spinner.setOnItemSelectedListener(listener);
-		int a = pref.getInt(VAT, 0);
-		spinner.setSelection(a >= 0 && a < VAT_DATA.length ? a : 0);
 		// Αρχικοποίηση spinner ΦΕ
 		spinner = findViewById(R.id.spIncomeTax);
 		spinner.setAdapter(createAdapter(INCOME_TAX_DATA));
+		selectVal(spinner, pref.getInt(INCOME_TAX, DEFAULT_INCOME_TAX));
 		spinner.setOnItemSelectedListener(listener);
-		a = pref.getInt(INCOME_TAX, 0);
-		spinner.setSelection(a >= 0 && a < INCOME_TAX_DATA.length ? a : 0);
 		setIncomeTaxInfo(spinner);
 		// Αρχικοποίηση spinner κρατήσεων (αρχικοποιείται στο setMode())
 		spinner = findViewById(R.id.spHolds);
+		selectVal(spinner, valHolds);
 		spinner.setOnItemSelectedListener(listener);
-		a = pref.getInt(HOLDS, 0);
-		spinner.setSelection(a < spinner.getAdapter().getCount() ? a : 0);
 		// Αρχικοποίηση spinner προμηθευτή
 		spinner = findViewById(R.id.spContractorType);
-		a = pref.getInt(CONTRACTOR, 0);
 		spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(final AdapterView<?> parentView, View selectedItemView, int position, long id) {
@@ -203,7 +206,7 @@ public class MainActivity extends Activity {
 			}
 			@Override public void onNothingSelected(AdapterView<?> parentView) {}
 		});
-		spinner.setSelection(a >= 0 && a < spinner.getCount() ? a : 0);
+		spinner.setSelection(pref.getInt(CONTRACTOR, 0));
 		// Κοινός listener για τον τύπο της αξίας, του τιμολογίου, της χρηματοδότησης
 		AdapterView.OnItemSelectedListener swListener = new AdapterView.OnItemSelectedListener() {
 			@Override public void onItemSelected(final AdapterView<?> parentView, View selectedItemView, int position, long id) { calculation(); }
@@ -251,6 +254,27 @@ public class MainActivity extends Activity {
 		checkBox = findViewById(R.id.cbConstruction);
 		checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> calculation());
 		checkBox.setChecked(pref.getBoolean(CONSTRUCTION, false));
+	}
+
+	/** Επιλέγει μια τιμή σε έναν επιλογέα, αλλά αν δεν υπάρχει, την εισάγει πρώτα.
+	 * Αφορά μόνο τους επιλογείς του ΦΕ, ΦΠΑ και κρατήσεων.
+	 * @param spinner Ο επιλογέας
+	 * @param num Η τιμή για εισαγωγή. Είναι integer αν πρόκεται για ΦΠΑ και ΦΕ και double αν
+	 * πρόκειται για κρατήσεις. */
+	static private boolean selectVal(AdapterView<?> spinner, Number num) {
+		final int other = spinner.getCount() - 1;
+		// Αν ο αριθμός ήδη υπάρχει στη λίστα...
+		for (int z = 0; z < other; ++z)
+			if (spinner.getItemAtPosition(z).equals(num)) {
+				spinner.setSelection(z);	// ...τον επιλέγει
+				return true;
+			}
+		// ...ειδάλλως τον εισάγει
+		ArrayAdapter adapter = (ArrayAdapter) spinner.getAdapter();
+		adapter.insert(num instanceof Double ? new Hold(num.doubleValue()) :  num, other);
+		spinner.setSelection(other);	// ...τον επιλέγει
+		adapter.notifyDataSetChanged();
+		return false;
 	}
 
 	/** Θέτει τη λειτουργία του προγράμματος για Στρατό ή Αεροπορία.
@@ -353,9 +377,9 @@ public class MainActivity extends Activity {
 		edit.putBoolean(AUTOMATIC, ((Switch) findViewById(R.id.swAuto)).isChecked());
 		edit.putInt(FINANCING_TYPE, ((Spinner) findViewById(R.id.spFinancingType)).getSelectedItemPosition());
 		edit.putBoolean(CONSTRUCTION, ((CheckBox) findViewById(R.id.cbConstruction)).isChecked());
-		edit.putInt(VAT, ((Spinner) findViewById(R.id.spVAT)).getSelectedItemPosition());
-		edit.putInt(INCOME_TAX, ((Spinner) findViewById(R.id.spIncomeTax)).getSelectedItemPosition());
-		edit.putInt(HOLDS, ((Spinner) findViewById(R.id.spHolds)).getSelectedItemPosition());
+		edit.putInt(VAT, (Integer) ((Spinner) findViewById(R.id.spVAT)).getSelectedItem());
+		edit.putInt(INCOME_TAX, (Integer) ((Spinner) findViewById(R.id.spIncomeTax)).getSelectedItem());
+		edit.putLong(HOLDS, Double.doubleToRawLongBits(((Hold) (((Spinner) findViewById(R.id.spHolds)).getSelectedItem())).total));
 		String s = ((EditText) findViewById(R.id.txtAmount)).getText().toString();
 		edit.putFloat(AMOUNT, s.isEmpty() ? 0 : Float.parseFloat(s));
 		edit.apply();
@@ -653,7 +677,7 @@ public class MainActivity extends Activity {
 	static private class Hold {
 		/** Δημιουργία μιας κράτησης, σαν σύνολο, χωρίς επιμέρους κρατήσεις.
 		 * @param sum Το σύνολο της κράτησης */
-		Hold(double sum) { data = null; total = sum / 100; }
+		Hold(double sum) { data = null; total = sum; }
 		/** Δημιουργία μιας κράτησης, με τις επιμέρους κρατήσεις.
 		 * @param holds Οι επιμέρους κρατήσεις, χωρίς το σύνολο (που υπολογίζεται), με τη σειρά που
 		 * εμφανίζονται τα ονόματά τους στο string array */

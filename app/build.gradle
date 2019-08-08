@@ -7,7 +7,7 @@ android {
 		applicationId 'chameleon.army.Invoice'
 		minSdkVersion 14
 		targetSdkVersion 28
-		versionCode 15
+		versionCode 16
 	}
 	buildTypes {
 		release {
