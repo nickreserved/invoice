@@ -30,7 +30,7 @@ public class MainActivity extends Activity {
 	/** Λίστα με τις τιμές του επιλογέα ΦΕ. */
 	static private final Object[] INCOME_TAX_DATA = { 4, 8, 3, 1, 10, 0 };
 	/** Λίστα με τις τιμές του επιλογέα ΦΠΑ. */
-	static private final Integer[] VAT_DATA = { 24, 13, 6,    17, 9, 5,    13,    0 };
+	static private final Integer[] VAT_DATA = { 24, 13, 6,    17, 9, 5,     0 };
 
 	/** Λίστα με όλες τις κρατήσεις στο Στρατό. */
 	//                             ΜΤΣ,     Χαρτόσημο,ΟΓΑ,       ΕΑΑΔΗΣΥ,ΑΕΠΠ,   ΒΑΜ,  ΕΚΟΕΜΣ
@@ -171,11 +171,48 @@ public class MainActivity extends Activity {
 
 		// Πρόγραμμα σε κατάσταση Πολεμικής Αεροπορίας ή Ελληνικού Στρατού
 		setMode(valAirforce);
-		// Αρχικοποίηση spinner ΦΠΑ
-		Spinner spinner = findViewById(R.id.spVAT);
+		// Λήψη του αποθηκευμένου ΦΠΑ
+		float valVatEuro;
+		int valVatPercent;
+		boolean euro;
+		try {
+			valVatPercent = pref.getInt(VAT, DEFAULT_VAT);
+			euro = false; valVatEuro = 0;
+		} catch(ClassCastException ex) {
+			valVatEuro = pref.getFloat(VAT, 0);
+			euro = true; valVatPercent = DEFAULT_VAT;
+		}
+		// Αρχικοποίηση spinner ΦΠΑ ποσοστού ή ευρώ
+		Spinner spinner = findViewById(R.id.spVATUnit);
+		spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+			@Override
+			public void onItemSelected(final AdapterView<?> parentView, View selectedItemView, int position, long id) {
+				// Περιγραφή του ΦΠΑ
+				((TextView) findViewById(R.id.tvVatInfo)).setText(position != 0 ? R.string.VATInfo2 : R.string.VATInfo1);
+				// Εμφάνιση απόκρυψη του component του ποσοστού
+				findViewById(R.id.spVAT).setVisibility(position != 0 ? View.GONE : View.VISIBLE);
+				// Εμφάνιση απόκρυψη του component του ποσού σε ευρώ
+				findViewById(R.id.txtVat).setVisibility(position == 0 ? View.GONE : View.VISIBLE);
+				// Επανυπολογισμός
+				calculation();
+			}
+			@Override public void onNothingSelected(AdapterView<?> parentView) {}
+		});
+		spinner.setSelection(euro ? 1 : 0);
+		// Αρχικοποίηση spinner ποσοστού ΦΠΑ
+		spinner = findViewById(R.id.spVAT);
 		spinner.setAdapter(createAdapter(VAT_DATA));
-		selectVal(spinner, pref.getInt(VAT, DEFAULT_VAT));
+		selectVal(spinner, valVatPercent);
 		spinner.setOnItemSelectedListener(listener);
+		// Αρχικοποίηση text field ποσού ΦΠΑ
+		EditText editText = findViewById(R.id.txtVat);
+		TextWatcher tw = new TextWatcher() {
+			@Override public void afterTextChanged(Editable s) { calculation(); }
+			@Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+			@Override public void onTextChanged(CharSequence s, int start, int before, int count) {}
+		};
+		editText.addTextChangedListener(tw);
+		if (valVatEuro > 0) editText.setText(Float.toString(valVatEuro).replace(".0", ""));
 		// Αρχικοποίηση spinner ΦΕ
 		spinner = findViewById(R.id.spIncomeTax);
 		spinner.setAdapter(createAdapter(INCOME_TAX_DATA));
@@ -225,12 +262,8 @@ public class MainActivity extends Activity {
 		spinner.setOnItemSelectedListener(swListener);
 		spinner.setSelection(pref.getInt(FINANCING_TYPE, 0));
 		// Αρχικοποίηση edittext για την αξία
-		EditText editText = findViewById(R.id.txtAmount);
-		editText.addTextChangedListener(new TextWatcher() {
-			@Override public void afterTextChanged(Editable s) { calculation(); }
-			@Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-			@Override public void onTextChanged(CharSequence s, int start, int before, int count) {}
-		});
+		editText = findViewById(R.id.txtAmount);
+		editText.addTextChangedListener(tw);
 		float b = pref.getFloat(AMOUNT, 0);
 		if (b > 0) editText.setText(Float.toString(b).replace(".0", ""));
 		// Αρχικοποίηση compound button για τον αυτόματο υπολογισμό
@@ -377,7 +410,12 @@ public class MainActivity extends Activity {
 		edit.putBoolean(AUTOMATIC, ((Switch) findViewById(R.id.swAuto)).isChecked());
 		edit.putInt(FINANCING_TYPE, ((Spinner) findViewById(R.id.spFinancingType)).getSelectedItemPosition());
 		edit.putBoolean(CONSTRUCTION, ((CheckBox) findViewById(R.id.cbConstruction)).isChecked());
-		edit.putInt(VAT, (Integer) ((Spinner) findViewById(R.id.spVAT)).getSelectedItem());
+		if (((Spinner) findViewById(R.id.spVATUnit)).getSelectedItemPosition() == 0)
+			edit.putInt(VAT, (Integer) ((Spinner) findViewById(R.id.spVAT)).getSelectedItem());
+		else {
+			String s = ((EditText) findViewById(R.id.txtVat)).getText().toString();
+			edit.putFloat(VAT, s.isEmpty() ? 0 : Float.parseFloat(s));
+		}
 		edit.putInt(INCOME_TAX, (Integer) ((Spinner) findViewById(R.id.spIncomeTax)).getSelectedItem());
 		edit.putLong(HOLDS, Double.doubleToRawLongBits(((Hold) (((Spinner) findViewById(R.id.spHolds)).getSelectedItem())).total));
 		String s = ((EditText) findViewById(R.id.txtAmount)).getText().toString();
@@ -394,7 +432,7 @@ public class MainActivity extends Activity {
 	 * @param holds Το ποσοστό κρατήσεων
 	 * @param fe Το ποσοστό ΦΕ
 	 * @return Η καθαρή αξία του τιμολογίου */
-	static private double calculateNet(int contractor, int amountType, double amount, double fpa,
+	static private double calculateNetPercent(int contractor, int amountType, double amount, double fpa,
 									   double holds, double fe) {
 		switch(contractor) {
 			case 0:	// Ιδιώτης
@@ -412,6 +450,42 @@ public class MainActivity extends Activity {
 				switch(amountType) {
 					case 1: amount /= 1.0 + fpa + holds; break;	// Καταλογιστέο
 					case 2: case 3: amount /= 1.0 + fpa; // Πληρωτέο ή Υπόλοιπο πληρωτέο
+					// default: Καθαρή αξία
+				}
+				break;
+			default:	//case 2:	// Στρατός
+				if (amountType == 1) amount /= 1.0 + holds;	// Καταλογιστέο
+				// else: Καθαρή αξία ή Πληρωτέο ή Υπόλοιπο πληρωτέο
+		}
+		// Στρογγυλοποίηση
+		return Math.round(amount * 100.0) / 100.0;
+	}
+	/** Υπολογισμός της καθαρής αξίας όταν δίνεται καταλογιστέο, πληρωτέο ή υπόλοιπο πληρωτέο.
+	 * @param contractor Ο τύπος του εκδότη του τιμολογίου
+	 * @param amountType Ο τύπος του ποσού (καθαρή αξία, καταλογιστέο, πληρωτέο, υπόλοιπο πληρωτέο)
+	 * @param amount Το ποσό
+	 * @param fpa Το ΦΠΑ του τιμολογίου σε ευρώ
+	 * @param holds Το ποσοστό κρατήσεων
+	 * @param fe Το ποσοστό ΦΕ
+	 * @return Η καθαρή αξία του τιμολογίου */
+	static private double calculateNetEuro(int contractor, int amountType, double amount, double fpa,
+	                                   double holds, double fe) {
+		switch(contractor) {
+			case 0:	// Ιδιώτης
+				switch(amountType) {
+					case 1: amount -= fpa; break;	// Καταλογιστέο
+					case 2: amount -= fpa; amount /= 1.0 - holds; break; // Πληρωτέο
+					case 3: // Υπόλοιπο πληρωτέο
+						// Στις εργολαβίες το ΦΕ υπολογίζεται επί της καθαρής αξίας, ειδάλλως επί της καθαρής αξίας μειον κρατήσεις
+						double feFactor = 1.0 - (fe == 0.03 ? 0 : holds);
+						amount -= fpa; amount /= 1.0 - holds - fe * feFactor;
+					// default: Καθαρή αξία
+				}
+				break;
+			case 1:	// ΝΠΔΔ
+				switch(amountType) {
+					case 1: amount -= fpa; amount /= 1.0 + holds; break;	// Καταλογιστέο
+					case 2: case 3: amount -= fpa; // Πληρωτέο ή Υπόλοιπο πληρωτέο
 					// default: Καθαρή αξία
 				}
 				break;
@@ -543,7 +617,10 @@ public class MainActivity extends Activity {
 			CompoundButton cbConstruction = findViewById(R.id.cbConstruction);
 			boolean construction = cbConstruction.isChecked();
 			double amount = Double.parseDouble(((EditText) (findViewById(R.id.txtAmount))).getText().toString());
-			double fpaPercent = Double.parseDouble(((Spinner) findViewById(R.id.spVAT)).getSelectedItem().toString()) / 100.0;
+			boolean fpaUnit = ((Spinner) findViewById(R.id.spVATUnit)).getSelectedItemPosition() != 0;
+			double fpaPercent = 0, fpa = 0;
+			if (fpaUnit) fpa = Double.parseDouble(((EditText) findViewById(R.id.txtVat)).getText().toString());
+			else fpaPercent = Double.parseDouble(((Spinner) findViewById(R.id.spVAT)).getSelectedItem().toString()) / 100.0;
 			double fePercent;
 			Hold hold;
 
@@ -590,11 +667,15 @@ public class MainActivity extends Activity {
 				// To +0.001 προστίθεται για να αποφευχθεί κάποια καταστροφική αποκοπή
 				hold = calculateHold(contractor, invoiceType, financing, PRICE_HOLD_CONTRACT + 0.001);
 				// Εύρεση καθαρής αξίας
-				double net = calculateNet(contractor, amountType, amount, fpaPercent, hold.total, 0);
+				double net = fpaUnit
+						? calculateNetEuro(contractor, amountType, amount, fpa, hold.total, 0)
+						: calculateNetPercent(contractor, amountType, amount, fpaPercent, hold.total, 0);
 				// Αν καθαρή αξία < PRICE_HOLD_CONTRACT, επανυπολογισμός κρατήσεων και καθαρής αξίας
 				if (net < PRICE_HOLD_CONTRACT) {
 					hold = calculateHold(contractor, invoiceType, financing, net);
-					net = calculateNet(contractor, amountType, amount, fpaPercent, hold.total, 0);
+					net = fpaUnit
+							? calculateNetEuro(contractor, amountType, amount, fpa, hold.total, 0)
+							: calculateNetPercent(contractor, amountType, amount, fpaPercent, hold.total, 0);
 				}
 				// Αν καθαρή αξία <= PRICE_INCOME_TAX και δεν έχουμε κατασκευή, το ΦΕ είναι 0
 				if (!construction && net <= PRICE_INCOME_TAX) fePercent = 0;
@@ -604,9 +685,11 @@ public class MainActivity extends Activity {
 				fePercent = Double.parseDouble(((Spinner) findViewById(R.id.spIncomeTax)).getSelectedItem().toString()) / 100.0;
 			}
 			// Εύρεση καθαρής αξίας
-			amount = calculateNet(contractor, amountType, amount, fpaPercent, hold.total, fePercent);
+			amount = fpaUnit
+					? calculateNetEuro(contractor, amountType, amount, fpa, hold.total, fePercent)
+					: calculateNetPercent(contractor, amountType, amount, fpaPercent, hold.total, fePercent);
 			// Υπολογισμοί ενδιάμεσων τιμών
-			double fpa = Math.round(amount * fpaPercent * 100.0) / 100.0;
+			if (!fpaUnit) fpa = Math.round(amount * fpaPercent * 100.0) / 100.0;
 			double holds = Math.round(amount * hold.total * 100.0) / 100.0;
 			double mixed = amount;
 			if (contractor != 2) mixed += fpa;		// όχι Στρατός
@@ -624,8 +707,9 @@ public class MainActivity extends Activity {
 					df.format(hold.total), df2.format(holds));
 			if (contractor != 0 /* ΝΠΔΔ, Στρατός, Ύδρευση-Έργα ΔΕΗ */) txt.append("+ ").append(txtHolds);
 			if (contractor != 2 /* όχι Στρατός */)
-				txt.append(String.format(getString(R.string.resVAT),
-						df.format(fpaPercent), df2.format(fpa)));
+				if (fpaUnit) txt.append(String.format(getString(R.string.resVAT2), df2.format(fpa)));
+				else txt.append(String.format(getString(R.string.resVAT1),
+							df.format(fpaPercent), df2.format(fpa)));
 			txt.append(String.format(getString(R.string.resMixed),
 					df2.format(mixed), txtHolds, df2.format(final1)));
 			if (contractor == 0 /* Ιδιώτης */ && fePercent > 0)

@@ -65,25 +65,46 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/VAT"
-                android:id="@+id/tvFPA"
+                android:id="@+id/tvVat"
                 android:textAppearance="@android:style/TextAppearance.Widget.TextView"
                 android:labelFor="@+id/spVAT"
                 android:paddingTop="@dimen/textview_vertical_padding" />
 
-            <Spinner
+	        <Spinner
+		        android:layout_width="wrap_content"
+		        android:layout_height="wrap_content"
+		        android:id="@+id/spVATUnit"
+		        android:entries="@array/vatUnit"
+		        android:layout_toEndOf="@id/tvVat"
+		        android:layout_toRightOf="@id/tvVat"
+		        android:layout_alignBaseline="@id/tvVat" />
+
+	        <Spinner
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/spVAT"
-                android:layout_toEndOf="@id/tvFPA"
-                android:layout_toRightOf="@id/tvFPA"
-                android:layout_alignBaseline="@id/tvFPA" />
+                android:layout_toEndOf="@id/spVATUnit"
+                android:layout_toRightOf="@id/spVATUnit"
+                android:layout_alignBaseline="@id/tvVat" />
+
+	        <EditText
+		        android:layout_width="wrap_content"
+		        android:layout_height="wrap_content"
+		        android:inputType="numberDecimal"
+		        android:id="@+id/txtVat"
+		        android:layout_alignBaseline="@id/tvVat"
+		        android:layout_toEndOf="@id/spVAT"
+		        android:layout_toRightOf="@id/spVAT"
+		        android:textAppearance="@android:style/TextAppearance.Widget"
+		        android:hint="@string/hintAmount"
+		        android:visibility="gone" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/VATInfo"
-                android:layout_below="@id/tvFPA" />
-
+	            android:id="@+id/tvVatInfo"
+                android:text="@string/VATInfo1"
+                android:layout_below="@id/tvVat" />
         </RelativeLayout>
 
 	    <Switch
