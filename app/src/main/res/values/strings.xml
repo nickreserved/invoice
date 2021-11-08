@@ -31,8 +31,9 @@
     <string name="requirements">Απαιτήσεις</string>
 	<string name="reqEmpty">Δεν υπάρχουν</string>
     <string name="reqContract">‒ Σύναψη σύμβασης</string>
-    <string name="reqCompetitionInformal">‒ Συνοπτικός διαγωνισμός</string>
-    <string name="reqCompetitionFormal">‒ Δημόσιος διαγωνισμός</string>
+    <string name="reqCompetition">‒ Διαγωνισμός</string>
+	<string name="reqCompetitionSocial">‒ Διαγωνισμός, πλην περιπτώσεων «κοινωνικών» δαπανών</string>
+	<string name="reqCompetitionManual">‒ Διαγωνισμός, πλην περιπτώσεων «κοινωνικών» δαπανών και δαπανών έργων</string>
     <string name="reqTaxCurrency">‒ Φορολογική ενημερότητα, για «πληρωμή από το Δημόσιο»</string>
     <string name="reqInsuranceCurrency">‒ Ασφαλιστική ενημερότητα</string>
 	<string name="reqCriminalRecord">‒ Απόσπασμα ποινικού μητρώου</string>

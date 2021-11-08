@@ -726,8 +726,10 @@ public class MainActivity extends Activity {
 			}
 			if (contractor != 2 /* όχι Στρατός */ && (amount > PRICE_CONTRACT || construction && auto))
 				txt.append(getString(R.string.reqContract)).append("\n");
-			if (amount > 60000) txt.append(getString(R.string.reqCompetitionFormal)).append("\n");
-			else if (amount > 20000 || construction && auto) txt.append(getString(R.string.reqCompetitionInformal)).append("\n");
+			if (amount > 60000) txt.append(getString(R.string.reqCompetition)).append("\n");
+			else if (amount > 30000)
+				if (!auto) txt.append(getString(R.string.reqCompetitionManual)).append("\n");
+				else if (!construction) txt.append(getString(R.string.reqCompetitionSocial)).append("\n");
 			if (amount > 20000) txt.append(getString(R.string.reqCriminalRecordDenial)).append("\n");
 			if (auto && construction && invoiceType == 1 /* Παροχή υπηρεσιών */)
 				txt.append(String.format(getString(R.string.reqConstructionContractor),
@@ -785,8 +787,8 @@ public class MainActivity extends Activity {
 			double[] euroData = new double[data.length];
 			class Pair {
 				private Pair(double remainder, int id) { this.remainder = remainder; this.id = id; }
-				private double remainder;
-				private int id;
+				final private double remainder;
+				final private int id;
 			}
 			ArrayList<Pair> remainders = new ArrayList<>();
 			for (int z = 0; z < data.length; ++z) {
