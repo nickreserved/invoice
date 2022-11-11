@@ -1,8 +1,8 @@
 <resources>
-    <string name="app_name">Τιμολόγιο Δαπάνης Στρατού</string>
-	<string name="app_name2">Τιμολόγιο Δαπάνης Αεροπορίας</string>
+    <string name="app_name_army">Τιμολόγιο Δαπάνης Στρατού</string>
+	<string name="app_name_airforce">Τιμολόγιο Δαπάνης Αεροπορίας &amp; Ναυτικού</string>
     <string name="about">Σχετικά</string>
-    <string name="aboutInfo">Υπολογισμός στοιχείων τιμολογίου για δαπάνη Στρατού &amp; Αεροπορίας\n\nΠαύλος Γκέσος (ΣΣΕ 2002)\nΈκδοση %1$d</string>
+    <string name="aboutInfo">Υπολογισμός στοιχείων τιμολογίου για δαπάνη Ενόπλων Δυνάμεων\n\nΠαύλος Γκέσος (ΣΣΕ 2002)\nΈκδοση %1$d</string>
 	<string name="web">Ιστοσελίδα</string>
     <string name="contractor">Οικονομικός φορέας</string>
     <string name="hintAmount">Ποσό (€)</string>
@@ -17,8 +17,8 @@
 
 	<string name="arm">Κλάδος ΕΔ</string>
 	<string name="armArmy">Στρατός</string>
-	<string name="armAirForce">Αεροπορία</string>
-	<string name="tvAirForceWarning">Υποστηρίζεται μόνο μια μικρή μειοψηφία δαπανών. Βοηθήστε για την επέκταση του προγράμματος.</string>
+	<string name="armAirForce">Αεροπορία &amp; Ναυτικό</string>
+	<string name="tvAirForceWarning">Υποστηρίζεται μόνο μια μικρή μειοψηφία δαπανών.</string>
 
 	<string name="tvFinancing">Χρηματοδότηση</string>
     <string name="tvInvoiceType">Τύπος τιμολογίου</string>
@@ -72,8 +72,7 @@
 		<item>ΕΛΟΑΑ</item>
 		<item>Χαρτόσημο</item>
 		<item>ΟΓΑ</item>
-		<item>ΕΑΑΔΗΣΥ</item>
-		<item>ΑΕΠΠ</item>
+		<item>ΕΑΔΗΣΥ</item>
 	</string-array>
 
     <string-array name="contractors">
@@ -116,8 +115,8 @@
 		<item>@string/buy</item>
 		<item>@string/service</item>
 		<item>@string/oil</item>
+		<item>@string/estate</item>
 		<item>@string/WaterElectricity</item>
-		<item>Προμήθεια τροφοδοσίας/καθαριότητας οπλιτών/μαθητών</item>
 	</string-array>
 
 	<string name="buy">Προμήθεια υλικών</string>
@@ -126,10 +125,18 @@
 	<string name="estate">Μίσθωση ακινήτων</string>
 	<string name="WaterElectricity">Λογαριασμοί ύδρευσης - αποχέτευσης ή έργα της ΔΕΗ</string>
 
-	<string-array name="FinancingType">
+	<string-array name="FinancingTypeArmy">
 		<item>Τακτικός Π/Υ</item>
 		<item>Ίδιοι πόροι</item>
-		<item>Π/Υ ΠΔΕ</item>
+		<item>@string/PDE</item>
 	</string-array>
+
+	<string-array name="FinancingTypeAirforce">
+		<item>Τακτικός Π/Υ, Εσωτερικοί πόροι, Αποθεματικά εκτός Π/Υ, Από εκμεταλλεύσεις όχι για εκμεταλλεύσεις</item>
+		<item>Χρηματικά διαθέσιμα, Από και για εκμεταλλεύσεις</item>
+		<item>@string/PDE</item>
+	</string-array>
+
+	<string name="PDE">Π/Υ ΠΔΕ</string>
 
 </resources>

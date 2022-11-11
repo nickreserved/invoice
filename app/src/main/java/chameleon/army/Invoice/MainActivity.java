@@ -65,14 +65,16 @@ public class MainActivity extends Activity {
 	};
 
 	/** Λίστα με όλες τις κρατήσεις στην Αεροπορία. */
-	//                             ΜΤΑ, ΕΛΟΑΑ Χαρτόσημο,ΟΓΑ,       ΕΑΑΔΗΣΥ,ΑΕΠΠ
+	//                             ΜΤΑ,  ΕΛΟΑΑ,Χαρτόσημο,ΟΓΑ,      ΕΑΔΗΣΥ
 	final static private Hold[] holdListAirForce = {
-	/*0*/	holdListArmy[0],			        										// 0 - Λογαριασμοί νερού, έργα ΔΕΗ
-	/*1*/	new Hold(new double[] {0.04, 0.02, 0.001218, 0.0002436, 0,      0.0006}),	// 6.20616 - Καθαρή αξία < 1000
-	/*2*/	new Hold(new double[] {0.04, 0.02, 0.001239, 0.0002478, 0.0007, 0.0006}),	// 6.27868 - Καθαρή αξία >= 1000
-	// Ανάγκες τροφοδοσίας και ατομικής καθαριότητας μαθητών/οπλιτών
-	/*3*/	new Hold(new double[] {0,    0,    0.000018, 0.0000036, 0,      0.0006}),	// 0.06216 - Καθαρή αξία < 1000
-	/*4*/	new Hold(new double[] {0,    0,    0.000039, 0.0000078, 0.0007, 0.0006}),	// 0.13468 - Καθαρή αξία >= 1000
+	// Δαπάνες σε βάρος χρηματικών διαθεσίμων (π.χ. ώνια) και κερδών εκμεταλλεύσεων για λογαριασμό των εκμεταλλεύσεων
+	// Λογαριασμοί νερού, έργα ΔΕΗ
+	/*0*/	holdListArmy[0],												// 0 - Καθαρή αξία < 1000
+	/*1*/	new Hold(new double[] {0,    0,    0.00003, 0.000006, 0.001}),	// 0.1036 - Καθαρή αξία >= 1000
+	// Τακτικός προϋπολογισμός, δαπάνες σε βάρος εσωτερικών πόρων και κερδών εκμεταλλεύσεων
+	// (όχι για λογαριασμό των εκμεταλλεύσεων) και δαπάνες σε βάρος αποθεματικών εκτός προϋπολογισμού
+	/*2*/	new Hold(new double[] {0.04, 0.02, 0.0012,  0.00024,  0}),		// 6.144 - Καθαρή αξία < 1000
+	/*3*/	new Hold(new double[] {0.04, 0.02, 0.00123, 0.000246, 0.001}),	// 6.2476 - Καθαρή αξία >= 1000
 	};
 
 	/** Το πιο χρησιμοποιημένο ΦΠΑ. */
@@ -327,9 +329,16 @@ public class MainActivity extends Activity {
 			((TextView) findViewById(R.id.tvAutoInfo)).setText(getString(
 					airforce ? R.string.tvAirForceWarning : R.string.tvAutoOn));
 		// Ο τίτλος του προγράμματος
-		setTitle(airforce ? R.string.app_name2 : R.string.app_name);
+		setTitle(airforce ? R.string.app_name_airforce : R.string.app_name_army);
 		// Αν είναι αεροπορία, δε χρειάζονται components για έργο ΜΧ
 		findViewById(R.id.cbConstruction).setVisibility(airforce ? View.GONE : View.VISIBLE);
+		// Η χρηματοδότηση είναι διαφορετική στο Στρατό και στην Αεροπορία
+		adapter = new ArrayAdapter(
+				MainActivity.this, android.R.layout.simple_spinner_item,
+				getResources().getTextArray(
+						airforce ? R.array.FinancingTypeAirforce : R.array.FinancingTypeArmy));
+		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		((Spinner) findViewById(R.id.spFinancingType)).setAdapter(adapter);
 		// Τα είδη τιμολογίου, είναι διαφορετικά στο Στρατό και στην Αεροπορία
 		adapter = new ArrayAdapter(
 				MainActivity.this, android.R.layout.simple_spinner_item,
@@ -546,45 +555,12 @@ public class MainActivity extends Activity {
 	 * @param net Η καθαρή αξία του τιμολογίου
 	 * @return Οι κρατήσεις του τιμολογίου */
 	static private Hold calculateHoldAirForce(int invoiceType, int financing, double net) {
-		// Ταύτιση με το invoiceType του Στρατού, προκειμένου η κλήση να μοιάζει με αυτή του Στρατου
-		switch(invoiceType) {
-			case 3: ++invoiceType; break;
-			case 4: invoiceType = 7; break;
-		}
 		Hold hold;
 		if (invoiceType == 4 /*Λογαριασμοί νερού/ΔΕΗ*/) hold = holdListAirForce[0];
-		else if (invoiceType == 7) hold = holdListAirForce[net >= PRICE_HOLD_CONTRACT ? 4 : 3];
-//		else if (contractor == 0 /*Ιδιώτης*/) {
-//			if (invoiceType == 3 /*Μισθώματα ακινήτων*/)
-//				switch(financing) {
-//					case 0: /*Τακτικός Π/Υ*/ hold = holdListArmy[2]; break;
-//					case 1: /*Ιδιοι πόροι*/ hold = holdListArmy[13]; break;
-//					default: /*case 2: Π/Υ ΠΔΕ*/ hold = holdListArmy[0];
-//				}
-			else if (net >= PRICE_HOLD_CONTRACT)
-				switch(financing) {
-					case 0: /*Τακτικός Π/Υ*/
-						hold = holdListAirForce[2];//invoiceType >= 5 /*Εκπόνηση/Επίβλεψη μελετών*/ ? 6 : 5];
-						break;
-//					case 1: /*Ιδιοι πόροι*/
-//						hold = holdListArmy[invoiceType >= 5 /*Εκπόνηση/Επίβλεψη μελετών*/ ? 17 : 16];
-//						break;
-					default: /*case 2: Π/Υ ΠΔΕ*/
-						hold = holdListAirForce[4];//invoiceType >= 5 /*Εκπόνηση/Επίβλεψη μελετών*/ ? 10 : 9];
-				}
-			else
-				switch(financing) {
-					case 0: /*Τακτικός Π/Υ*/
-						hold = holdListAirForce[1];//invoiceType >= 5 /*Εκπόνηση/Επίβλεψη μελετών*/ ? 4 : 3];
-						break;
-//					case 1: /*Ιδιοι πόροι*/
-//						hold = holdListArmy[invoiceType >= 5 /*Εκπόνηση/Επίβλεψη μελετών*/ ? 15 : 14];
-//						break;
-					default: /*case 2: Π/Υ ΠΔΕ*/
-						hold = holdListAirForce[3];//invoiceType >= 5 /*Εκπόνηση/Επίβλεψη μελετών*/ ? 8 : 7];
-				}
-			// contractor: 1:ΝΠΔΔ 2:Στρατος
-//		} else hold = holdListArmy[financing == 1 /*Ιδιοι πόροι*/ ? 12 : 1];
+		else if (net >= PRICE_HOLD_CONTRACT && invoiceType != 3 /*Μισθώματα ακινήτων*/)
+			hold = holdListAirForce[financing == 0 /*Τακτικός Π/Υ*/ ? 3 : 1];
+		else
+			hold = holdListAirForce[financing == 0 /*Τακτικός Π/Υ*/ ? 2 : 0];
 		return hold;
 	}
 
@@ -640,8 +616,6 @@ public class MainActivity extends Activity {
 				// Σε τιμολόγιο αεροπορίας
 				if (airforce) {
 					construction = false;               // δεν έχουμε κατασκευαστικές δαπάνες
-					// δεν υποστηρίζεται χρηματοδότηση ιδίων πόρων
-					if (financing == 1 /*Ίδιοι Πόροι*/) spFinancingType.setSelection(financing = 0);
 					if (contractor != 0 /*Ιδιώτης*/)	// και προμηθευτής είναι πάντα ιδιώτης
 						((Spinner) findViewById(R.id.spContractorType)).setSelection(contractor = 0);
 				}
@@ -654,14 +628,14 @@ public class MainActivity extends Activity {
 					invoiceType = 0; //Προμήθεια υλικών
 
 				// Υπολογισμός του ΦΕ
-				if (contractor != 0 /*Όχι ιδιώτης*/ || invoiceType == 3 /*Μίσθωση ακινήτου για Στρατό, Λογαριασμοί νερού - έργα ΔΕΗ για Αεροπορία*/
-						|| !airforce && invoiceType == 4 /*Λογαριασμοί νερού - έργα ΔΕΗ*/) fePercent = 0;
+				if (contractor != 0 /*Όχι ιδιώτης*/ || invoiceType == 3 /*Μίσθωση ακινήτου*/
+						|| invoiceType == 4 /*Λογαριασμοί νερού - έργα ΔΕΗ*/) fePercent = 0;
 				// Μεταγενέστερα: if (!construction && net <= 150) fePercent = 0;
 				else if (invoiceType == 2 /*Προμήθεια υγρών καυσίμων*/) fePercent = 0.01;
 				else if (invoiceType == 1 /*Παροχή υπηρεσιών*/)
 					fePercent = construction /*Κατασκευή έργου*/ ? 0.03 : 0.08;
 				else if (invoiceType == 6 /*Επίβλεψη μελέτης*/) fePercent = 0.1;
-				else fePercent = 0.04; /*invoiceType: 0:Προμήθεια υλικών ή 5:Εκπόνηση μελέτης ή 4:Τροφοδοσία/Καθαριότητα Οπλιτών Αεροπορίας*/
+				else fePercent = 0.04; /*invoiceType: 0:Προμήθεια υλικών ή 5:Εκπόνηση μελέτης*/
 
 				// Υπολογισμός κρατήσεων, αρχικά θεωρώντας την καθαρή αξία >= PRICE_HOLD_CONTRACT
 				// To +0.001 προστίθεται για να αποφευχθεί κάποια καταστροφική αποκοπή

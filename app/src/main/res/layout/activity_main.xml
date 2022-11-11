@@ -142,7 +142,7 @@
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:id="@+id/spFinancingType"
-				android:entries="@array/FinancingType"
+				android:entries="@array/FinancingTypeArmy"
 				android:layout_alignBaseline="@id/tvFinancing"
 				android:layout_toEndOf="@id/tvFinancing"
 				android:layout_toRightOf="@id/tvFinancing" />
