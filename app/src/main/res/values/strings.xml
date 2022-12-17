@@ -1,6 +1,6 @@
 <resources>
-    <string name="app_name_army">Τιμολόγιο Δαπάνης Στρατού</string>
-	<string name="app_name_airforce">Τιμολόγιο Δαπάνης Αεροπορίας &amp; Ναυτικού</string>
+    <string name="app_name_army">Τιμολόγιο Δαπάνης ΕΣ</string>
+	<string name="app_name_airforce">Τιμολόγιο Δαπάνης ΠΝ &amp; ΠΑ</string>
     <string name="about">Σχετικά</string>
     <string name="aboutInfo">Υπολογισμός στοιχείων τιμολογίου για δαπάνη Ενόπλων Δυνάμεων\n\nΠαύλος Γκέσος (ΣΣΕ 2002)\nΈκδοση %1$d</string>
 	<string name="web">Ιστοσελίδα</string>
@@ -10,14 +10,14 @@
     <string name="VATInfo1">Όλα τα είδη του τιμολογίου πρέπει να έχουν το ίδιο ποσοστό ΦΠΑ.</string>
 	<string name="VATInfo2">Το συνολικό ΦΠΑ του τιμολογίου σε €.</string>
     <string name="automatic">Κρατήσεις &amp; ΦΕ, αυτόματα</string>
-    <string name="tvAutoOn">Με την Φ.830/66/1184096/Σ.4098/26 Ιουλ 19/ΓΕΣ/ΔΟΙ</string>
+    <string name="tvAutoOn">Με την Φ.830/12/1250230/Σ.5988/6 Δεκ 22/ΓΕΣ/ΔΟΙ</string>
 	<string name="tvAutoOff">Μόνο για έμπειρους χρήστες με ευχέρεια στις δαπάνες</string>
     <string name="Holds">Κρατήσεις (%)</string>
     <string name="IncomeTax">ΦΕ (%)</string>
 
 	<string name="arm">Κλάδος ΕΔ</string>
-	<string name="armArmy">Στρατός</string>
-	<string name="armAirForce">Αεροπορία &amp; Ναυτικό</string>
+	<string name="armArmy">ΕΣ</string>
+	<string name="armAirForce">ΠΝ &amp; ΠΑ</string>
 	<string name="tvAirForceWarning">Υποστηρίζεται μόνο μια μικρή μειοψηφία δαπανών.</string>
 
 	<string name="tvFinancing">Χρηματοδότηση</string>
@@ -62,14 +62,13 @@
 		<item>ΜΤΣ</item>
 		<item>Χαρτόσημο</item>
 		<item>ΟΓΑ</item>
-		<item>ΕΑΑΔΗΣΥ</item>
-		<item>ΑΕΠΠ</item>
+		<item>ΕΑΔΗΣΥ</item>
 		<item>ΒΑΜ</item>
 		<item>ΕΚΟΕΜΣ</item>
 	</string-array>
 	<string-array name="hldPartsAirForce">
-		<item>ΜΤΑ</item>
-		<item>ΕΛΟΑΑ</item>
+		<item>ΜΤΝ/ΜΤΑ</item>
+		<item>ΕΛΟΑΝ/ΕΛΟΑΑ</item>
 		<item>Χαρτόσημο</item>
 		<item>ΟΓΑ</item>
 		<item>ΕΑΔΗΣΥ</item>
@@ -108,8 +107,8 @@
         <item>@string/oil</item>
 		<item>@string/estate</item>
 		<item>@string/WaterElectricity</item>
-		<item>Εκπόνηση μελέτης μηχανικού</item>
-		<item>Επίβλεψη εφαρμογής μελέτης ή εκπόνηση μελέτης εκτός μηχανικού</item>
+		<item>Εκπόνηση μελετών έργων χωροταξικών, πολεοδομικών, συγκοινωνιακών, υδραυλικών, τοπογραφικών, Διεύθυνση εκτέλεσης έργου</item>
+		<item>Εκπόνηση μελετών λοιπών έργων, Επίβλεψη έργου, Πραγματογνωμοσύνη έργου</item>
     </string-array>
 	<string-array name="InvoiceTypeAirForce">
 		<item>@string/buy</item>
