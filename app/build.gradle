@@ -1,13 +1,12 @@
 apply plugin: 'com.android.application'
 
 android {
-	compileSdk 33
-	buildToolsVersion '33.0.0'
+	compileSdk 34
 	defaultConfig {
 		applicationId 'chameleon.army.Invoice'
 		minSdkVersion 14
-		targetSdk 33
-		versionCode 21
+		targetSdk 34
+		versionCode 22
 	}
 	buildTypes {
 		release {

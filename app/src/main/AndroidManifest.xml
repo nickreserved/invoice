@@ -4,11 +4,10 @@
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
-        android:label="@string/app_name_army" >
+        android:label="@string/app_name_armed_forces" >
         <activity
             android:name=".MainActivity"
-            android:exported="true"
-            android:label="@string/app_name_army" >
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

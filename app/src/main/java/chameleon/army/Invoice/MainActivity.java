@@ -33,35 +33,30 @@ public class MainActivity extends Activity {
 	static private final Integer[] VAT_DATA = { 24, 13, 6,    17, 9, 5,     0 };
 
 	/** Λίστα με όλες τις κρατήσεις στο Στρατό. */
-	//                             ΜΤΣ,     Χαρτόσημο,ΟΓΑ,      ΕΑΔΗΣΥ,   ΒΑΜ,  ΕΚΟΕΜΣ
+	//                             ΜΤΣ,     ΕΛΟΑΣ,   Χαρτόσημο,ΟΓΑ,      ΕΑΔΗΣΥ,ΒΑΜ,  ΕΚΟΕΜΣ
 	final static private Hold[] holdListArmy = {
 	// ΤΑΚΤΙΚΟΣ Π/Υ
 	// Καθαρή αξία < 1000
-	/*0*/	new Hold(new double[] {0.04,    0.0008,  0.00016}),								// 4.096 - Μισθώματα ακινήτων
-	/*1*/	new Hold(new double[] {0.04,    0.0028,  0.00016}),								// 4.296 - Αμοιβές μελετητών
+	/*0*/	new Hold(new double[] {0.04,    0.02,    0.0012,   0.00024}),						// 6.144 - Μισθώματα ακινήτων
+	/*1*/	new Hold(new double[] {0.04,    0.02,    0.0032,   0.00064}),						// 6.384 - Αμοιβές μελετητών
 	// Καθαρή αξία >= 1000
-	/*2*/	new Hold(new double[] {0.04,    0.00083, 0.000166, 0.001}), 					// 4.1996
-	/*3*/	new Hold(new double[] {0.04,    0.00283, 0.000166, 0.001}), 					// 4.3996 - Αμοιβές μελετητών
+	/*2*/	new Hold(new double[] {0.04,    0.02,    0.00123,  0.000246, 0.001}), 				// 6.2476 - ΟΧΙ Μισθώματα ακινήτων
+	/*3*/	new Hold(new double[] {0.04,    0.02,    0.00323,  0.000646, 0.001}), 				// 6.4876 - Αμοιβές μελετητών
 	// Προμήθεια από στρατιωτική εκμετάλλευση εξυπηρέτησης προσωπικόυ, δημόσιες υπηρεσίες, ΝΠΔΔ, ανεξαρτήτως ποσού
-	/*4*/	new Hold(new double[] {0.03904, 0.0008,  0.00016}),								// 4 - Προμήθεια από Πρατήριο ή ΝΠΔΔ
+	/*4*/	new Hold(new double[] {0.03904, 0.01952, 0.0012,   0.00024}),						// 6 - Προμήθεια από Πρατήριο ή ΝΠΔΔ
 	// ΙΔΙΟΙ ΠΟΡΟΙ
 	// Καθαρή αξία < 1000
-	/*5*/	new Hold(new double[] {0.04,	0.0008,  0.00016,  0,	  0.02, 0.08}), 		// 14.096 - Μισθώματα ακινήτων
-	/*6*/	new Hold(new double[] {0.04,    0.0028,  0.00016,  0,	  0.02, 0.08}), 		// 14.296 - Αμοιβές μελετητών
+	/*5*/	new Hold(new double[] {0.04,	0.02,    0.0012,   0.00024,  0,	    0.02, 0.08}),	// 16.144 - Μισθώματα ακινήτων
+	/*6*/	new Hold(new double[] {0.04,    0.02,    0.0032,   0.00064,  0,	    0.02, 0.08}),	// 16.384 - Αμοιβές μελετητών
 	// Καθαρή αξία >= 1000
-	/*7*/	new Hold(new double[] {0.04,    0.00083, 0.000166, 0.001, 0.02, 0.08}), 		// 14.1996 - Μισθώματα ακινήτων
-	/*8*/	new Hold(new double[] {0.04,    0.00283, 0.000166, 0.001, 0.02, 0.08}), 		// 14.3996 - Αμοιβές μελετητών
+	/*7*/	new Hold(new double[] {0.04,    0.02,    0.00123,  0.000246, 0.001, 0.02, 0.08}), 	// 16.2476 - ΟΧΙ Μισθώματα ακινήτων
+	/*8*/	new Hold(new double[] {0.04,    0.02,    0.00323,  0.000646, 0.001, 0.02, 0.08}), 	// 16.4876 - Αμοιβές μελετητών
 	// Προμήθεια από στρατιωτική εκμετάλλευση εξυπηρέτησης προσωπικόυ, δημόσιες υπηρεσίες, ΝΠΔΔ, ανεξαρτήτως ποσού
-	/*9*/	new Hold(new double[] {0.03904, 0.0008,  0.00016,  0,     0.02, 0.08}),			// 14 - Προμήθεια από Πρατήριο ή ΝΠΔΔ
+	/*9*/	new Hold(new double[] {0.03904, 0.01952, 0.0012,   0.00024,  0,     0.02, 0.08}),	// 16 - Προμήθεια από Πρατήριο ή ΝΠΔΔ
 	// Π/Υ ΠΔΕ
-	// Καθαρή αξία < 1000
-	/*10*/	new Hold(new double[] {0}),	                                					// 0 - Λογαριασμοί νερού, έργα ΔΕΗ, Μισθώματα ακινήτων
-	/*11*/	new Hold(new double[] {0,       0.002}),                  						// 0.2 - Αμοιβές μελετητών
-	// Καθαρή αξία >= 1000
-	/*12*/	new Hold(new double[] {0,       0.00003, 0.000006, 0.001}), 					// 0.1036
-	/*13*/	new Hold(new double[] {0,       0.00203, 0.000006, 0.001}), 					// 0.3036 - Αμοιβές μελετητών
+	/*10*/	new Hold(new double[] {0}),	                                						// 0 - Λογαριασμοί νερού, έργα ΔΕΗ, Μισθώματα ακινήτων
 	// ΔΑΠΑΝΕΣ ΛΕΣΧΩΝ
-	/*14*/	new Hold(new double[] {0,       0,       0,        0,     0.02, 0.08}), 		// 10 - Λέσχες
+	/*11*/	new Hold(new double[] {0,       0,       0,       0,        0,     0.02, 0.08}), 	// 10 - Λέσχες
 	};
 
 	/** Λίστα με όλες τις κρατήσεις στην Αεροπορία. */
@@ -69,7 +64,7 @@ public class MainActivity extends Activity {
 	final static private Hold[] holdListAirForce = {
 	// Δαπάνες σε βάρος χρηματικών διαθεσίμων (π.χ. ώνια) και κερδών εκμεταλλεύσεων για λογαριασμό των εκμεταλλεύσεων
 	// Λογαριασμοί νερού, έργα ΔΕΗ
-	/*0*/	holdListArmy[0],												// 0 - Καθαρή αξία < 1000
+	/*0*/	new Hold(new double[] {0}),										// 0 - Καθαρή αξία < 1000
 	/*1*/	new Hold(new double[] {0,    0,    0.00003, 0.000006, 0.001}),	// 0.1036 - Καθαρή αξία >= 1000
 	// Τακτικός προϋπολογισμός, δαπάνες σε βάρος εσωτερικών πόρων και κερδών εκμεταλλεύσεων
 	// (όχι για λογαριασμό των εκμεταλλεύσεων) και δαπάνες σε βάρος αποθεματικών εκτός προϋπολογισμού
@@ -276,7 +271,7 @@ public class MainActivity extends Activity {
 				findViewById(R.id.layAutomatic).setVisibility(View.VISIBLE);
 				// Το επεξηγηματικό κείμενο του κομβίου αυτόματου υπολογισμού
 				((TextView) findViewById(R.id.tvAutoInfo)).setText(getString(
-						airforce ? R.string.tvAirForceWarning : R.string.tvAutoOn));
+						airforce ? R.string.tvAutoOnAirForce : R.string.tvAutoOnArmy));
 			} else {
 				findViewById(R.id.layAdvanced).setVisibility(View.VISIBLE);
 				findViewById(R.id.layAutomatic).setVisibility(View.GONE);
@@ -327,7 +322,7 @@ public class MainActivity extends Activity {
 		// Το επεξηγηματικό κείμενο του κομβίου αυτόματου υπολογισμού
 		if (isAuto())
 			((TextView) findViewById(R.id.tvAutoInfo)).setText(getString(
-					airforce ? R.string.tvAirForceWarning : R.string.tvAutoOn));
+					airforce ? R.string.tvAutoOnAirForce : R.string.tvAutoOnArmy));
 		// Ο τίτλος του προγράμματος
 		setTitle(airforce ? R.string.app_name_airforce : R.string.app_name_army);
 		// Αν είναι αεροπορία, δε χρειάζονται components για έργο ΜΧ
@@ -514,7 +509,7 @@ public class MainActivity extends Activity {
 	 * @return Οι κρατήσεις του τιμολογίου */
 	static private Hold calculateHoldArmy(int contractor, int invoiceType, int financing, double net) {
 		int idx;
-		if (invoiceType == 4 /*Λογαριασμοί νερού/ΔΕΗ*/) idx = 10;
+		if (invoiceType == 4 /*Λογαριασμοί νερού/ΔΕΗ*/ || financing == 2 /*Π/Υ ΠΔΕ*/) idx = 10;
 		else {
 			idx = 5 * financing;
 			if (contractor != 0 /*1:ΝΠΔΔ 2:Στρατος*/) idx += 4;

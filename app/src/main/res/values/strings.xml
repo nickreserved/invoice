@@ -1,5 +1,6 @@
 <resources>
-    <string name="app_name_army">Τιμολόγιο Δαπάνης ΕΣ</string>
+	<string name="app_name_armed_forces">Τιμολόγιο Δαπάνης ΕΔ</string>
+	<string name="app_name_army">Τιμολόγιο Δαπάνης ΕΣ</string>
 	<string name="app_name_airforce">Τιμολόγιο Δαπάνης ΠΝ &amp; ΠΑ</string>
     <string name="about">Σχετικά</string>
     <string name="aboutInfo">Υπολογισμός στοιχείων τιμολογίου για δαπάνη Ενόπλων Δυνάμεων\n\nΠαύλος Γκέσος (ΣΣΕ 2002)\nΈκδοση %1$d</string>
@@ -10,7 +11,8 @@
     <string name="VATInfo1">Όλα τα είδη του τιμολογίου πρέπει να έχουν το ίδιο ποσοστό ΦΠΑ.</string>
 	<string name="VATInfo2">Το συνολικό ΦΠΑ του τιμολογίου σε €.</string>
     <string name="automatic">Κρατήσεις &amp; ΦΕ, αυτόματα</string>
-    <string name="tvAutoOn">Με την Φ.830/12/1250230/Σ.5988/6 Δεκ 22/ΓΕΣ/ΔΟΙ</string>
+    <string name="tvAutoOnArmy">Με την Φ.830/7/1466624/Σ.2868/31 Μαι 24/ΓΕΣ/ΔΟΙ</string>
+	<string name="tvAutoOnAirForce">Με την Φ.831/13123/Σ.2230/7 Νοε 22/ΓΕΑ/Δ6/4β</string>
 	<string name="tvAutoOff">Μόνο για έμπειρους χρήστες με ευχέρεια στις δαπάνες</string>
     <string name="Holds">Κρατήσεις (%)</string>
     <string name="IncomeTax">ΦΕ (%)</string>
@@ -18,7 +20,6 @@
 	<string name="arm">Κλάδος ΕΔ</string>
 	<string name="armArmy">ΕΣ</string>
 	<string name="armAirForce">ΠΝ &amp; ΠΑ</string>
-	<string name="tvAirForceWarning">Υποστηρίζεται μόνο μια μικρή μειοψηφία δαπανών.</string>
 
 	<string name="tvFinancing">Χρηματοδότηση</string>
     <string name="tvInvoiceType">Τύπος τιμολογίου</string>
@@ -60,6 +61,7 @@
 
 	<string-array name="hldPartsArmy">
 		<item>ΜΤΣ</item>
+		<item>ΕΛΟΑΣ</item>
 		<item>Χαρτόσημο</item>
 		<item>ΟΓΑ</item>
 		<item>ΕΑΔΗΣΥ</item>
