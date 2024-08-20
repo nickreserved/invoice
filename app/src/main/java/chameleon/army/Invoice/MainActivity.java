@@ -54,9 +54,14 @@ public class MainActivity extends Activity {
 	// Προμήθεια από στρατιωτική εκμετάλλευση εξυπηρέτησης προσωπικόυ, δημόσιες υπηρεσίες, ΝΠΔΔ, ανεξαρτήτως ποσού
 	/*9*/	new Hold(new double[] {0.03904, 0.01952, 0.0012,   0.00024,  0,     0.02, 0.08}),	// 16 - Προμήθεια από Πρατήριο ή ΝΠΔΔ
 	// Π/Υ ΠΔΕ
-	/*10*/	new Hold(new double[] {0}),	                                						// 0 - Λογαριασμοί νερού, έργα ΔΕΗ, Μισθώματα ακινήτων
+	// Καθαρή αξία < 1000
+	/*10*/	new Hold(new double[] {0}),	                         			       				// 0 - Λογαριασμοί νερού, έργα ΔΕΗ, Μισθώματα ακινήτων
+	/*11*/	new Hold(new double[] {0,       0,       0.002}),									// 0.2 - Αμοιβές μελετητών
+	// Καθαρή αξία >= 1000
+	/*12*/	new Hold(new double[] {0,       0,       0.00003,  0.000006, 0.001}), 				// 0.1036 - ΟΧΙ Μισθώματα ακινήτων
+	/*13*/	new Hold(new double[] {0,       0,       0.00203,  0.000006, 0.001}), 				// 0.3036 - Αμοιβές μελετητών
 	// ΔΑΠΑΝΕΣ ΛΕΣΧΩΝ
-	/*11*/	new Hold(new double[] {0,       0,       0,       0,        0,     0.02, 0.08}), 	// 10 - Λέσχες
+	/*14*/	new Hold(new double[] {0,       0,       0,       0,        0,     0.02, 0.08}), 	// 10 - Λέσχες
 	};
 
 	/** Λίστα με όλες τις κρατήσεις στην Αεροπορία. */
@@ -117,7 +122,7 @@ public class MainActivity extends Activity {
 		try {
 			valHolds = Double.longBitsToDouble(pref.getLong(HOLDS, 0));
 			valAirforce = pref.getBoolean(ARM_TYPE, false);
-		} catch(ClassCastException ex) {}
+		} catch(ClassCastException ignored) {}
 
 		// Κοινός listener για spinner Κρατήσεων, ΦΠΑ και ΦΕ
 		AdapterView.OnItemSelectedListener listener = new AdapterView.OnItemSelectedListener() {
@@ -153,11 +158,11 @@ public class MainActivity extends Activity {
 									if (selectVal(parentView, num))
 										Toast.makeText(MainActivity.this, R.string.existedValue, Toast.LENGTH_SHORT).show();
 									else setIncomeTaxInfo(parentView);
-								} catch (NumberFormatException e) {}
+								} catch (NumberFormatException ignored) {}
 							})
 							.setNegativeButton(android.R.string.cancel, (dialog, whichButton) -> {
 								parentView.setSelection(0);
-								((ArrayAdapter) parentView.getAdapter()).notifyDataSetChanged();
+								((ArrayAdapter<?>) parentView.getAdapter()).notifyDataSetChanged();
 								setIncomeTaxInfo(parentView);
 							})
 							.show();
@@ -368,24 +373,22 @@ public class MainActivity extends Activity {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		int id = item.getItemId();
-		switch(id) {
-			case R.id.action_about:     // Menu "Σχετικά"
-				new AlertDialog.Builder(this)
-						.setTitle(R.string.about)
-						.setMessage(String.format(getString(R.string.aboutInfo), BuildConfig.VERSION_CODE))
-						.setNeutralButton(android.R.string.ok, null)
-						.setCancelable(true)
-						.create().show();
-				return true;
-			case R.id.action_arm:       // Menu "Κλάδος ΕΔ"
-				new AlertDialog.Builder(this)
-						.setTitle(R.string.arm)
-						.setPositiveButton(R.string.armArmy, (dialog, which) -> setMode(false))
-						.setNeutralButton(R.string.armAirForce, (dialog, which) -> setMode(true))
-						.show();
-				return true;
-			default: return super.onOptionsItemSelected(item);
-		}
+		if (id == R.id.action_about) { // Menu "Σχετικά"
+			new AlertDialog.Builder(this)
+					.setTitle(R.string.about)
+					.setMessage(String.format(getString(R.string.aboutInfo), BuildConfig.VERSION_CODE))
+					.setNeutralButton(android.R.string.ok, null)
+					.setCancelable(true)
+					.create().show();
+			return true;
+		} else if (id == R.id.action_arm) { // Menu "Κλάδος ΕΔ"
+			new AlertDialog.Builder(this)
+					.setTitle(R.string.arm)
+					.setPositiveButton(R.string.armArmy, (dialog, which) -> setMode(false))
+					.setNeutralButton(R.string.armAirForce, (dialog, which) -> setMode(true))
+					.show();
+			return true;
+		} else return super.onOptionsItemSelected(item);
 	}
 
 	/** Εμφανίζει πληροφορίες σε ένα TextView, σχετικές με το ποσοστό ΦΕ του τιμολογίου.
@@ -509,7 +512,7 @@ public class MainActivity extends Activity {
 	 * @return Οι κρατήσεις του τιμολογίου */
 	static private Hold calculateHoldArmy(int contractor, int invoiceType, int financing, double net) {
 		int idx;
-		if (invoiceType == 4 /*Λογαριασμοί νερού/ΔΕΗ*/ || financing == 2 /*Π/Υ ΠΔΕ*/) idx = 10;
+		if (invoiceType == 4 /*Λογαριασμοί νερού/ΔΕΗ*/) idx = 10;
 		else {
 			idx = 5 * financing;
 			if (contractor != 0 /*1:ΝΠΔΔ 2:Στρατος*/) idx += 4;

@@ -1,12 +1,12 @@
 apply plugin: 'com.android.application'
 
 android {
-	compileSdk 34
-	defaultConfig {
+    compileSdk 35
+    defaultConfig {
 		applicationId 'chameleon.army.Invoice'
 		minSdkVersion 14
-		targetSdk 34
-		versionCode 22
+        targetSdk 35
+        versionCode 23
 	}
 	buildTypes {
 		release {
@@ -19,9 +19,12 @@ android {
 			minifyEnabled false
 		}
 	}
+	buildFeatures {
+		buildConfig = true
+	}
 	compileOptions {
-		sourceCompatibility JavaVersion.VERSION_11
-		targetCompatibility JavaVersion.VERSION_11
+		sourceCompatibility JavaVersion.VERSION_17
+		targetCompatibility JavaVersion.VERSION_17
 	}
 	dependenciesInfo {
 		includeInApk = false		// Disables dependency metadata when building APKs.
