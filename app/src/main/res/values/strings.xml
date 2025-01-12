@@ -62,8 +62,6 @@
 	<string-array name="hldPartsArmy">
 		<item>ΜΤΣ</item>
 		<item>ΕΛΟΑΣ</item>
-		<item>Χαρτόσημο</item>
-		<item>ΟΓΑ</item>
 		<item>ΕΑΔΗΣΥ</item>
 		<item>ΒΑΜ</item>
 		<item>ΕΚΟΕΜΣ</item>
@@ -71,8 +69,6 @@
 	<string-array name="hldPartsAirForce">
 		<item>ΜΤΝ/ΜΤΑ</item>
 		<item>ΕΛΟΑΝ/ΕΛΟΑΑ</item>
-		<item>Χαρτόσημο</item>
-		<item>ΟΓΑ</item>
 		<item>ΕΑΔΗΣΥ</item>
 	</string-array>
 
